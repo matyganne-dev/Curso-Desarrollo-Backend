@@ -4,11 +4,11 @@
 
 ## Descripción
 
-    El proyecto hace dos cosas: 
+El proyecto hace dos cosas: 
     
-    index.js: Arma la ficha de un videojuego con datos propios, permitiendo pasar o no el nombre del estudiante por consola. Usa módulos nativos para armar la ruta, crear la carpeta salida/, guardar la ficha en ficha-videojuego.txt y mostrarla en la terminal.  
+index.js: Arma la ficha de un videojuego con datos propios, permitiendo pasar o no el nombre del estudiante por consola. Usa módulos nativos para armar la ruta, crear la carpeta salida/, guardar la ficha en ficha-videojuego.txt y mostrarla en la terminal.  
 
-    orden-event-loop.js: Muestra cómo funciona el Event Loop en consola usando setTimeout con 0 ms para ver que lo asíncrono no interrumpe el código principal.  
+orden-event-loop.js: Muestra cómo funciona el Event Loop en consola usando setTimeout con 0 ms para ver que lo asíncrono no interrumpe el código principal.  
 
 
 ## Cómo ejecutar
