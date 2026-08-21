@@ -57,5 +57,16 @@ Plataformas: ${plataformasListado}
 ¿Es multijugador?: ${juegoMultijugador}
 `;
 
+//ruta carpeta + "salida"
+const carpetaSalida = path.join(__dirname, "salida");
+//ruta archivo
+const archivoRuta = path.join(carpetaSalida, "ficha-videojuego.txt");
+//crear salida
+fs.mkdirSync(carpetaSalida, { recursive: true });
+//Generar salida
+fs.writeFileSync(archivoRuta, ficha, "utf-8");
 
+// prueba de ficha
 console.log(ficha);
+
+console.log(`Archivo generado en: ${archivoRuta}`);
