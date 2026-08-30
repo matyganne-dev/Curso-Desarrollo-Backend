@@ -6,18 +6,19 @@ Aplicación de consola desarrollada en Node.js que lee un catálogo de juegos de
 
 ## Instalación
 
-    Clonar el repositorio y ejecutar en la raíz del proyecto para instalar las dependencias declaradas:
+Clonar el repositorio y ejecutar en la raíz del proyecto para instalar las dependencias declaradas:
+
     npm install
 
 ## Ejecución
 
-    verificar los modulos:
+verificar los modulos:
 
-        npm run check
+    npm run check
 
-    Iniciar la app:
+Iniciar la app:
 
-        npm start
+    npm start
 
 ## Estructura del proyecto
 
@@ -37,7 +38,7 @@ Aplicación de consola desarrollada en Node.js que lee un catálogo de juegos de
 
 ## Flujo asíncrono
 
-    El asincronismo está presente en archivos.js y se coordina en index.js mediante async/await.
+El asincronismo está presente en archivos.js y se coordina en index.js mediante async/await.
 
 ## Dependencias
 
