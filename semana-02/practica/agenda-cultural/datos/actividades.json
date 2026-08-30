@@ -1,0 +1,14 @@
+[
+    {
+        "nombre": "Ciclo de cine",
+        "lugar": "Centro Cultural del Sur",
+        "fecha": "2026-08-28",
+        "gratuita": true
+    },
+    {
+        "nombre": "Feria de ilustración",
+        "lugar": "Biblioteca Central",
+        "fecha": "2026-09-03",
+        "gratuita": false
+    }
+]
