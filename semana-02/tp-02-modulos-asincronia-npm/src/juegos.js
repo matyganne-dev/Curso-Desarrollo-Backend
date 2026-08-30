@@ -24,4 +24,13 @@ function crearInforme(juegos) {
     `
 }
 
-module.exports = { crearInforme };
+//extra
+function crearResumen(juegos) {
+    return {
+        totalJuegos: juegos.length,
+        titulos: juegos.map(juego => juego.titulo),
+        juegosDisponibles: juegos.filter(juego => juego.disponible).length
+    };
+}
+
+module.exports = { crearInforme, crearResumen };
