@@ -9,7 +9,7 @@ function formatearInforme(juego, numeroRegistro) {
     ${numeroRegistro + 1}. ${juego.titulo}
     Editorial y año: ${juego.editorial}, ${juego.anio}
     Participantes: ${juego.jugadoresMin} a ${juego.jugadoresMax}
-    Categorías: ${juego.categorias}
+    Categorías: ${juego.categorias.join(', ')}
     Estado: ${estadoJuego}`;
 }
 
