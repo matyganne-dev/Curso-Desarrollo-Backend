@@ -1,0 +1,79 @@
+[
+    {
+        "titulo": "Ajedrez",
+        "editorial": "Dominio Público",
+        "anio": 1475,
+        "jugadoresMin": 2,
+        "jugadoresMax": 2,
+        "categorias": [
+            "Estrategia",
+            "Abstracto"
+        ],
+        "disponible": true
+    },
+    {
+        "titulo": "UNO",
+        "editorial": "Mattel",
+        "anio": 1971,
+        "jugadoresMin": 2,
+        "jugadoresMax": 10,
+        "categorias": [
+            "Cartas",
+            "Familiar",
+            "Party Game"
+        ],
+        "disponible": true
+    },
+    {
+        "titulo": "T.E.G.",
+        "editorial": "Yetem",
+        "anio": 1976,
+        "jugadoresMin": 2,
+        "jugadoresMax": 6,
+        "categorias": [
+            "Estrategia",
+            "Bélico",
+            "Control de área"
+        ],
+        "disponible": false
+    },
+    {
+        "titulo": "Rummy",
+        "editorial": "Ruibal",
+        "anio": 1977,
+        "jugadoresMin": 2,
+        "jugadoresMax": 4,
+        "categorias": [
+            "Fichas",
+            "Estrategia",
+            "Combinaciones"
+        ],
+        "disponible": true
+    },
+    {
+        "titulo": "Monopoly",
+        "editorial": "Hasbro",
+        "anio": 1935,
+        "jugadoresMin": 2,
+        "jugadoresMax": 8,
+        "categorias": [
+            "Finanzas",
+            "Negociación",
+            "Familiar"
+        ],
+        "disponible": false
+    },
+    {
+        "titulo": "Truco",
+        "editorial": "Dominio Público",
+        "anio": 1850,
+        "jugadoresMin": 2,
+        "jugadoresMax": 4,
+        "categorias": [
+            "Cartas",
+            "Engaño",
+            "Tradicional"
+        ],
+        "disponible": true
+    }
+]
