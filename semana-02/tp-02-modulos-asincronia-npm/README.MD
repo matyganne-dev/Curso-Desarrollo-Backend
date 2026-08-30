@@ -2,7 +2,7 @@
 
 ## Descripción
 
-    Aplicación de consola desarrollada en Node.js que lee un catálogo de juegos de mesa desde un archivo JSON, transforma y formatea los datos para generar un reporte en texto plano (`catalogo-juegos.txt`) y un extra archivo adicional con estadísticas (`resumen.json`).
+Aplicación de consola desarrollada en Node.js que lee un catálogo de juegos de mesa desde un archivo JSON, transforma y formatea los datos para generar un reporte en texto plano (`catalogo-juegos.txt`) y un extra archivo adicional con estadísticas (`resumen.json`).
 
 ## Instalación
 
