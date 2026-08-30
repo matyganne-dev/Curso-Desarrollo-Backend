@@ -1,0 +1,13 @@
+{
+    "name": "catalogo-de-juegos",
+    "version": "1.0.0",
+    "private": true,
+    "type": "commonjs",
+    "scripts": {
+        "start": "node src/index.js",
+        "check": "node --check src/index.js && node --check src/archivos.js && node --check src/juegos.js"
+    },
+    "dependencies": {
+        "picocolors": "^1.1.1"
+    }
+}
