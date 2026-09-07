@@ -43,6 +43,20 @@ async function main() {
             res.status(200).json(resultado);
         })
 
+
+        app.get("/api/instrumentos/:id", (req, res) => {
+            //Extraemos y convertimos a number
+            const id = Number(req.params.id);
+            //Buscamos con el dinf
+            const instrumento = instrumentos.find((elemento) => elemento.id === id);
+            //Si no encuentra devolvemos el error
+            if (!instrumento) {
+                return res.status(404).json({ error: "Instrumento no encontrado" });
+            }
+            //De caso contrario si lo encontramos y devolvemos el valor encontrado.
+            res.status(200).json(instrumento);
+        });
+
         app.listen(PORT, () => {
             console.log(`Servidor disponible en http://localhost:${PORT}`);
         });
