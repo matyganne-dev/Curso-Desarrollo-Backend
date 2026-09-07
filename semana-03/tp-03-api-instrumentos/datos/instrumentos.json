@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "nombre": "Guitarra Criolla",
+    "familia": "Cuerda",
+    "origen": "España",
+    "descripcion": "Guitarra clásica de madera con cuerdas de nylon, ideal para música folclórica y académica.",
+    "disponible": true
+  },
+  {
+    "id": 2,
+    "nombre": "Flauta",
+    "familia": "Viento",
+    "origen": "Alemania",
+    "descripcion": "Instrumento de viento madera, de sonido dulce y brillante, usado en orquestas y bandas.",
+    "disponible": true
+  },
+  {
+    "id": 3,
+    "nombre": "Piano",
+    "familia": "Teclado",
+    "origen": "Italia",
+    "descripcion": "Instrumento de teclas con cuerdas percutidas, versátil y fundamental en la música clásica y moderna.",
+    "disponible": true
+  },
+  {
+    "id": 4,
+    "nombre": "Violín",
+    "familia": "Cuerda",
+    "origen": "Italia",
+    "descripcion": "Instrumento de cuerda frotada con sonido cálido y versátil, usado en orquestas y música de cámara.",
+    "disponible": true
+  },
+  {
+    "id": 5,
+    "nombre": "Tambor",
+    "familia": "Percusión",
+    "origen": "Argentina",
+    "descripcion": "Instrumento de percusión de membrana, usado en diversos géneros musicales y rituales.",
+    "disponible": true
+  }
+]
