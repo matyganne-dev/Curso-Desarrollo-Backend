@@ -17,9 +17,13 @@ Para detener el servidor en cualquier momento, simplemente apretá Ctrl + C en l
 
 ## Endpoints
 GET  / - Muestra un mensaje de bienvenida de la API.
+
 GET  /api/instrumentos - Trae la lista completa de todos los instrumentos.
+
 GET  /api/instrumentos?familia=cuerda - Filtra la lista por familia (ej: cuerda).
+
 GET  /api/instrumentos/:id - Busca y devuelve un instrumento específico por su ID.
+
 POST /api/instrumentos - Agrega un nuevo instrumento al catálogo.
 
 ## Ejemplos de solicitudes
