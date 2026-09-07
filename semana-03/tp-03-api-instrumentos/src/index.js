@@ -57,6 +57,36 @@ async function main() {
             res.status(200).json(instrumento);
         });
 
+        app.post("/api/instrumentos", (req, res) => {
+            //Extraemos los datos del cliente
+            const { nombre, familia, origen, descripcion, disponible } = req.body;
+            //validacion de campos
+            if (!nombre || !familia || !origen || !descripcion || disponible === undefined) {
+                return res.status(400).json({
+                    error: "Los campos nombre, familia, origen, descripcion y disponible son obligatorios."
+                });
+            }
+
+            //Generación del nuevo ID
+            //buscamos el ID del último elemento y le sumamos 1
+            const ultimoId = instrumentos.length === 0 ? 0 : instrumentos[instrumentos.length - 1].id;
+
+            const nuevoInstrumento = {
+                id: ultimoId + 1,
+                nombre,
+                familia,
+                origen,
+                descripcion,
+                disponible
+            };
+
+            //Agregamos el nuevo instrumento a nuestro array
+            instrumentos.push(nuevoInstrumento);
+            // devolvemos estado y objeto
+            res.status(201).json(nuevoInstrumento);
+        });
+
+
         app.listen(PORT, () => {
             console.log(`Servidor disponible en http://localhost:${PORT}`);
         });
