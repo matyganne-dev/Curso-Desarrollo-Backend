@@ -1,0 +1,19 @@
+<section class="detalle">
+    <header>
+        <h1><%= mascota.nombre %></h1>
+        <p class="etiqueta"><%= mascota.estado %></p>
+    </header>
+
+    <div>
+        <img src="<%= mascota.imagen %>" alt="Ilustración de la mascota <%= mascota.nombre %>" width="150">
+        
+        <ul>
+            <li><strong>Especie:</strong> <%= mascota.especie %></li>
+            <li><strong>Edad:</strong> <%= mascota.edad %> años</li>
+        </ul>
+        
+        <p><strong>Sobre mí:</strong> <%= mascota.descripcion %></p>
+    </div>
+
+    <a href="/mascotas">Volver al catálogo</a>
+</section>
