@@ -8,8 +8,8 @@ const PORT = 3000;
 const rutaDatos = path.join(__dirname, "..", "datos", "mascotas.json");
 
 async function main() {
-    console.log("dirname",__dirname);
-    console.log("ruta:", rutaDatos);
+    // console.log("dirname", __dirname);
+    // console.log("ruta:", rutaDatos);
     try {
         const mascotas = await leerJson(rutaDatos);
 
@@ -24,8 +24,21 @@ async function main() {
         app.use(express.static(path.join(__dirname, "..", "public")));
         app.use(express.urlencoded({ extended: false }));
 
+        // app.get("/", (req, res) => {
+        //     res.send("Servidor configurado");
+        // });
+
         app.get("/", (req, res) => {
-            res.send("Servidor configurado");
+            res.render("inicio", {
+                titulo: "Refugio de Mascotas"
+            });
+        });
+
+        app.get("/mascotas", (req, res) => {
+            res.render("mascotas/lista", {
+                titulo: "Mascotas en adopción",
+                mascotas: mascotas
+            });
         });
 
         app.listen(PORT, () => {
