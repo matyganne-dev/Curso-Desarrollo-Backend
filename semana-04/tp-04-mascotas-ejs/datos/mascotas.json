@@ -6,7 +6,7 @@
         "edad": 3,
         "descripcion": "Un perro muy guardián y juguetón.",
         "estado": "En adopción",
-        "imagen": "/img/mascota.svg"
+        "imagen": "/img/dog1.avif"
     },
     {
         "id": 2,
@@ -15,7 +15,7 @@
         "edad": 2,
         "descripcion": "Una gata tranquila y muy cariñosa.",
         "estado": "En adopción",
-        "imagen": "/img/mascota.svg"
+        "imagen": "/img/cat1.avif"
     },
     {
         "id": 3,
@@ -24,7 +24,7 @@
         "edad": 5,
         "descripcion": "Perro leal, obediente y protector con los niños.",
         "estado": "En adopción",
-        "imagen": "/img/mascota.svg"
+        "imagen": "/img/dog2.avif"
     },
     {
         "id": 4,
@@ -33,7 +33,7 @@
         "edad": 1,
         "descripcion": "Gatita curiosa y llena de energía, ideal para departamento.",
         "estado": "En adopción",
-        "imagen": "/img/mascota.svg"
+        "imagen": "/img/cat2.avif"
     },
     {
         "id": 5,
@@ -42,6 +42,6 @@
         "edad": 4,
         "descripcion": "Perro sociable que se lleva bien con otras mascotas.",
         "estado": "En adopción",
-        "imagen": "/img/mascota.svg"
+        "imagen": "/img/dog3.avif"
     }
 ]
