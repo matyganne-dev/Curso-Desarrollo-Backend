@@ -46,7 +46,7 @@ section h1 {
   letter-spacing: -0.025em;
 }
 
-.header-btn {
+.header-btn, .btn-volver {
   background-color: var(--color-primario);
   color: #ffffff;
   border: none;
