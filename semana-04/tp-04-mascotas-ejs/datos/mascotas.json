@@ -1,0 +1,47 @@
+[
+    {
+        "id": 1,
+        "nombre": "Firulais",
+        "especie": "Perro",
+        "edad": 3,
+        "descripcion": "Un perro muy guardián y juguetón.",
+        "estado": "En adopción",
+        "imagen": "/img/mascota.svg"
+    },
+    {
+        "id": 2,
+        "nombre": "Michilichi",
+        "especie": "Gato",
+        "edad": 2,
+        "descripcion": "Una gata tranquila y muy cariñosa.",
+        "estado": "En adopción",
+        "imagen": "/img/mascota.svg"
+    },
+    {
+        "id": 3,
+        "nombre": "Marco antonio",
+        "especie": "Perro",
+        "edad": 5,
+        "descripcion": "Perro leal, obediente y protector con los niños.",
+        "estado": "En adopción",
+        "imagen": "/img/mascota.svg"
+    },
+    {
+        "id": 4,
+        "nombre": "Luna",
+        "especie": "Gato",
+        "edad": 1,
+        "descripcion": "Gatita curiosa y llena de energía, ideal para departamento.",
+        "estado": "En adopción",
+        "imagen": "/img/mascota.svg"
+    },
+    {
+        "id": 5,
+        "nombre": "saboo",
+        "especie": "Perro",
+        "edad": 4,
+        "descripcion": "Perro sociable que se lleva bien con otras mascotas.",
+        "estado": "En adopción",
+        "imagen": "/img/mascota.svg"
+    }
+]
