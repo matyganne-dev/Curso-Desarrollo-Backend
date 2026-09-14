@@ -1,4 +1,3 @@
 "use strict";
 
-console.log("Recursos estáticos cargados");
-
+console.log("Los recursos estáticos de Refugio de Mascotas cargaron correctamente.");
