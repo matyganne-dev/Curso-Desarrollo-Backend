@@ -66,6 +66,51 @@ async function main() {
             });
         });
 
+        app.post("/mascotas", (req, res) => {
+            const { nombre, especie, edad, estado, descripcion } = req.body;
+            const nombreLimpio = String(nombre ?? "").trim();
+            const especieLimpia = String(especie ?? "").trim();
+            const estadoLimpio = String(estado ?? "").trim();
+            const descripcionLimpia = String(descripcion ?? "").trim();
+            const edadNumerica = Number(edad);
+
+            if (
+                !nombreLimpio ||
+                !especieLimpia ||
+                !estadoLimpio ||
+                !descripcionLimpia ||
+                !Number.isFinite(edadNumerica) ||
+                edadNumerica < 0
+            ) {
+                return res.status(400).render("mascotas/nueva", {
+                    titulo: "Dar en adopción",
+                    error: "Por favor, completá todos los campos correctamente. La edad no puede ser negativa.",
+                    valores: req.body
+                });
+            }
+
+            const ultimoId = mascotas.reduce(
+                (mayorId, mascota) => Math.max(mayorId, mascota.id),
+                0
+            );
+
+            const nuevaMascota = {
+                id: ultimoId + 1,
+                nombre: nombreLimpio,
+                especie: especieLimpia,
+                edad: edadNumerica,
+                estado: estadoLimpio,
+                descripcion: descripcionLimpia,
+                imagen: "/img/mascota.svg"
+            };
+
+            // se agrega el arreglo (solo en memoria, no en el JSON)
+            mascotas.push(nuevaMascota);
+
+            // Redireccion
+            res.redirect("/mascotas");
+        });
+
         app.listen(PORT, () => {
             console.log(`Servidor de Mascotas disponible en http://localhost:${PORT}`);
         });
