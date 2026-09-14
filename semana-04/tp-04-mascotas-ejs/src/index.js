@@ -41,6 +41,31 @@ async function main() {
             });
         });
 
+        app.get("/mascotas/nueva", (req, res) => {
+            res.render("mascotas/nueva", {
+                titulo: "Dar en adopción",
+                error: null,
+                valores: {}
+            });
+        });
+
+        app.get("/mascotas/:id", (req, res) => {
+            const id = Number(req.params.id);
+
+            const mascota = mascotas.find((elemento) => elemento.id === id);
+
+            if (!mascota) {
+                return res.status(404).render("no-encontrado", {
+                    titulo: "Mascota no encontrada"
+                });
+            }
+
+            res.render("mascotas/detalle", {
+                titulo: `Detalle de ${mascota.nombre}`,
+                mascota: mascota
+            });
+        });
+
         app.listen(PORT, () => {
             console.log(`Servidor de Mascotas disponible en http://localhost:${PORT}`);
         });
