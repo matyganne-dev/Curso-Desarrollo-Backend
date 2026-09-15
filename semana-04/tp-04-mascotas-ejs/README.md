@@ -17,9 +17,13 @@ Para levantar el servidor, usá el comando:
 
 ## Páginas y rutas
 GET  / : Página inicial.
+
 GET  /mascotas : El catálogo completo con todas las tarjetas.
+
 GET  /mascotas/nueva : formulario para cargar una mascota.
+
 GET  /mascotas/:id : Muestra la información detallada de una mascota específica.
+
 POST /mascotas : La ruta que ataja el envío del formulario y procesa los datos ingresados.
 
 ## Estructura de vistas
