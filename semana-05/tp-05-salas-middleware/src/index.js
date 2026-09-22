@@ -68,3 +68,22 @@ function medirDuracion(req, res, next) {
     });
     next();
 }
+
+//Config vistas
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "..", "views"));
+app.set("layout", "layouts/main");
+
+// pipeline middleware
+app.use(morgan("dev"));
+app.use(identificarSolicitud);
+app.use(medirDuracion);
+app.use(expressLayouts);
+app.use(express.static(path.join(__dirname, "..", "public")));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+app.listen(PORT, () => {
+    console.log(`Aplicación disponible en http://localhost:${PORT}`);
+});
