@@ -25,15 +25,25 @@ Cuando mandás el formulario y todos los datos están bien, el recorrido es este
 
 POST /reservas
  ↓ morgan("dev")
+
  ↓ identificarSolicitud
+
  ↓ medirDuracion
+
  ↓ expressLayouts
+
  ↓ express.urlencoded
+
  ↓ reservasRouter
+
  ↓ prepararAreaReservas
+
  ↓ validarReserva
+
  ↓ crearReserva
+
  ↓ 302 /reservas
+
  ↓ finish: ID + estado + duración
 
 ### Diagrama de un POST inválido
@@ -41,14 +51,23 @@ Si te faltó llenar algo o pusiste letras en vez de números, la validación ata
 
 POST /reservas
  ↓ morgan("dev")
+
  ↓ identificarSolicitud
+
  ↓ medirDuracion
+
  ↓ expressLayouts
+
  ↓ express.urlencoded
+
  ↓ reservasRouter
+
  ↓ prepararAreaReservas
+
  ↓ validarReserva
+
  ↓ 400 render formulario (acá corta y te pide arreglar los datos)
+ 
  ↓ finish: ID + estado + duración
 
 ## Alcance de cada función
