@@ -84,6 +84,116 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+//rutas
+
+app.get("/", (req, res) => {
+    res.render("inicio", {
+        titulo: "Inicio - Sistema de Reservas"
+    });
+});
+
+app.get("/estado", (req, res) => {
+    res.json({
+        servicio: "activo",
+        reservas: reservas.length,
+        solicitudId: res.locals.solicitudId
+    });
+});
+
+
+function validarReserva(req, res, next) {
+  const estudiante = String(req.body.estudiante ?? "").trim();
+  const email = String(req.body.email ?? "").trim();
+  const sala = String(req.body.sala ?? "").trim();
+  const fecha = String(req.body.fecha ?? "").trim();
+  const turno = String(req.body.turno ?? "").trim();
+  
+  const personas = Number(req.body.personas);
+  const turnosPermitidos = ["Mañana", "Tarde", "Noche"];
+
+  if (
+    !estudiante || 
+    !email || !email.includes("@") || 
+    !sala || !salasPermitidas.includes(sala) || 
+    !fecha || 
+    !turno || !turnosPermitidos.includes(turno) || 
+    !Number.isInteger(personas) || personas < 1 || personas > 6 
+  ) {
+    
+    return res.status(400).render("reservas/nueva", {
+      titulo: "Nueva Reserva",
+      error: "Completá todos los campos con valores válidos.",
+      valores: req.body
+    });
+  }
+
+  req.reservaValidada = { estudiante, email, sala, fecha, turno, personas };
+  next();
+}
+
+function crearReserva(req, res) {
+  const ultimoId = reservas.reduce(
+    (mayorId, reserva) => Math.max(mayorId, reserva.id),
+    0
+  );
+
+  reservas.push({ 
+    id: ultimoId + 1, 
+    ...req.reservaValidada 
+  });
+
+  res.redirect("/reservas");
+}
+
+const reservasRouter = express.Router();
+function prepararAreaReservas(req, res, next) {
+  res.locals.seccion = "Reservas de salas";
+  next();
+}
+reservasRouter.use(prepararAreaReservas);
+reservasRouter.post("/", validarReserva, crearReserva);
+
+reservasRouter.get("/", (req, res) => {
+  res.render("reservas/lista", {
+    titulo: "Listado de Reservas",
+    reservas: reservas
+  });
+});
+
+reservasRouter.get("/nueva", (req, res) => {
+  res.render("reservas/nueva", {
+    titulo: "Nueva Reserva",
+    error: null,
+    valores: {}
+  });
+});
+
+reservasRouter.get("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const reserva = reservas.find((elemento) => elemento.id === id);
+
+  if (!reserva) {
+    return res.status(404).render("no-encontrado", {
+      titulo: "Reserva no encontrada",
+      mensaje: "No existe una reserva con ese identificador."
+    });
+  }
+
+  res.render("reservas/detalle", {
+    titulo: `Detalle de la Reserva #${reserva.id}`,
+    reserva: reserva
+  });
+});
+
+app.use("/reservas", reservasRouter);
+
+app.use((req, res) => {
+  res.status(404).render("no-encontrado", {
+    titulo: "Página no encontrada",
+    mensaje: "La dirección solicitada no existe."
+  });
+});
+
 app.listen(PORT, () => {
     console.log(`Aplicación disponible en http://localhost:${PORT}`);
 });
