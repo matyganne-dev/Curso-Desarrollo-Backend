@@ -1,97 +1,61 @@
-# Trabajo práctico 05
-## Descripción
-Aplicación web con Express y EJS para gestionar reservas de salas de estudio. El objetivo principal de este TP es mostrar cómo funciona el "pipeline de middleware". Básicamente, es el recorrido que hace una solicitud pasando por distintas funciones (como Morgan, el medidor de tiempo y los validadores) antes de responderle al usuario.
+# Trabajo práctico 06
 
-## Instalación
+## Proyecto de partida y cambios
+Este proyecto es la refactorización del TP 05. La idea fue agarrar ese código donde estaba todo mezclado en el `index.js` y separarlo en módulos (rutas, controladores, servicios, etc.). Se mantuvo todo tal cual estaba funcionando, el pipeline y las vistas, pero ahora la arquitectura está ordenada y limpia en carpetas.
+
+## Instalación y ejecución
 1. Descargá o cloná el proyecto.
-2. Abrí la terminal en la carpeta y corré `npm install`. Esto va a descargar las dependencias necesarias que dejé en el package.json (express, ejs, express-ejs-layouts y morgan).
+2. Abrí la terminal y corré `npm install` para bajar las dependencias.
+3. Creá el archivo `.env` en la raíz basándote en el `.env.example`.
+4. Levantá el server con `npm start`.
 
-## Ejecución
-* Para arrancar el servidor: `npm start`
-* Para chequear si hay algún error raro en la sintaxis antes de arrancar: `npm run check`
+## Configuración del entorno
+Agregué un archivo `.env` (ignoramos en Git) para manejar las variables de entorno. De ahí saco el puerto (`process.env.PORT`), así no queda fijo en el código. En `configuracion.js` valido que sea un número válido, y si falla, la aplicación se corta. Además, configuré Morgan para que cambie su formato dependiendo si el entorno es producción o desarrollo.
 
-## Rutas
-* `GET /` - Página de inicio del sitio.
-* `GET /estado` - Devuelve un JSON para chequear que el server esté vivo.
-* `GET /reservas` - Muestra la lista con todas las reservas.
-* `GET /reservas/nueva` - Muestra el formulario para hacer una reserva.
-* `GET /reservas/:id` - Muestra el detalle de una reserva específica.
-* `POST /reservas` - Recibe los datos del form y los procesa.
+## Mapa de módulos y dependencias
+Seguimos usando Express, EJS, express-ejs-layouts y Morgan. Agregué ESLint y Prettier como dependencias de desarrollo.
+- **`src/configuracion.js`**: Levanta las variables del `.env` y valida el puerto.
+- **`src/app.js`**: Configura Express, las vistas EJS y ensambla el pipeline.
+- **`src/index.js`**: Es el punto de entrada, solo arranca el servidor.
+- **`src/rutas/reservas.js`**: El enrutador que maneja los endpoints relativos.
+- **`src/controladores/reservas.js`**: Recibe las peticiones, llama al servicio y manda la respuesta.
+- **`src/servicios/reservas.js`**: Maneja el array de datos y toda la lógica.
+- **`src/middleware/`**: Separé los logs de consola y las validaciones de datos en archivos aparte.
 
-## Pipeline de middleware
+## Pipeline y contrato de rutas
+El pipeline quedó exactamente igual que en el TP anterior:
+Morgan -> identificarSolicitud -> medirDuracion -> expressLayouts -> estáticos -> parsers -> router de reservas -> 404 global.
 
-### Diagrama de un POST válido
-Cuando mandás el formulario y todos los datos están bien, el recorrido es este:
+**Conceptos de arquitectura:**
+- El **controlador** funciona prácticamente como un puente. Se encarga de conectar el servicio con los endpoints o las peticiones que llegan, y ahí es donde se ejecuta el `res` (la respuesta).
+- En el router declaro **caminos relativos** (como `/nueva` o `/:id`) para que sea un bloque modular. Si el día de mañana me piden cambiar la ruta principal de `/reservas` a otra cosa, solo lo cambio en una sola línea en `app.js` y no tengo que modificar todas las rutas una por una.
 
-POST /reservas
+## Matriz antes/después
+Antes, en el TP5, tenía todo metido en un solo archivo. Ahora, el arreglo de datos y la lógica viven solamente en `servicios/reservas.js`.
+El servicio no usa `res` porque el `res` es una respuesta web, y el servicio no maneja eso. El servicio es como el cerebro: se encarga de recibir la data, agregar, buscar o modificar el array. El `res` viene de otro sector (del controlador).
 
- ↓ morgan("dev")
+| Caso --- Estado esperado --- Evidencia |
 
- ↓ identificarSolicitud
+| Inicio | 200 | Navegación y solicitud ID |
+| Estado | 200 | JSON con reservas actuales |
+| Lista de reservas | 200 | Muestra el listado de reservas |
+| Nueva reserva (GET) | 200 | Muestra el formulario vacío |
+| Detalle existente | 200 | Muestra los datos de la reserva |
+| Detalle inexistente | 404 | Muestra página no encontrado |
+| Nueva reserva (POST) - Datos válidos | 302 | Redirige al listado |
+| Nueva reserva (POST) - Datos inválidos | 400 | Renderiza form con error |
 
- ↓ medirDuracion
+## Formato y análisis estático
+Antes de probar la app corrí `npm run check` (que ejecuta ESLint y Prettier). Prettier formateó los archivos y ESLint no devolvió ningún error, asegurando que el código está limpio y sin variables sin usar.
 
- ↓ expressLayouts
+## Persistencia temporal y limites
+El único arreglo de reservas está guardado en la memoria temporal (RAM) adentro de `src/servicios/reservas.js`. El límite de esto es que si freno el servidor y lo vuelvo a arrancar, cualquier reserva que haya agregado desde el navegador se pierde y vuelven a quedar solamente las 4 iniciales que están escritas en el código.
 
- ↓ express.urlencoded
+## explicacion extra
+*Servicio sin res : El servicio es el cerebro. se encarga en modificar y procesar los datos , no maneja las respuestas web, por eso no usa el res.
 
- ↓ reservasRouter
+*Controlador Funciona como un puente que conecta las peticiones web con el servicio, y luego devuelve la respuesta final
 
- ↓ prepararAreaReservas
+*Cambios relativos router: se usa para que el bloque sea modular. esto sirve por si en un futuro cambia la ruta, solo se modifica una linea.
 
- ↓ validarReserva
-
- ↓ crearReserva
-
- ↓ 302 /reservas
-
- ↓ finish: ID + estado + duración
-
-### Diagrama de un POST inválido
-Si te faltó llenar algo o pusiste letras en vez de números, la validación ataja el error y corta el recorrido antes de crear la reserva:
-
-POST /reservas
-
- ↓ morgan("dev")
-
- ↓ identificarSolicitud
-
- ↓ medirDuracion
-
- ↓ expressLayouts
-
- ↓ express.urlencoded
-
- ↓ reservasRouter
-
- ↓ prepararAreaReservas
-
- ↓ validarReserva
-
- ↓ 400 render formulario (acá corta y te pide arreglar los datos)
-
- ↓ finish: ID + estado + duración
-
-## Alcance de cada función
-Las funciones intermedias (middlewares) se pueden aplicar a distintos niveles:
-* **Globales (de aplicación):** Los activamos con `app.use()` (como `morgan` o nuestro `identificarSolicitud`). Todas las peticiones pasan por acá sí o sí.
-* **De router:** Los enganchamos a un router (como `prepararAreaReservas`). Solo se ejecutan si el usuario entra a la sección de reservas.
-* **De ruta:** Se ponen directamente en la ruta final (como la validación del `POST`). Solo saltan cuando le pegás a esa ruta y método exactos.
-
-## Validación
-Una regla clave acá fue poner los parsers (`express.urlencoded`) antes de hacer la validación. Esto es porque el parser es el que mastica los datos que vienen del formulario y te los deja listos adentro de `req.body`. Si pusiéramos la validación primero, `req.body` estaría vacío y no tendríamos nada que validar. 
-
-Por otro lado, cuando una función termina su trabajo sin problemas, llama a `next()`. Esto le avisa a Express: "yo ya terminé, pasale la posta al siguiente middleware". Si no llamamos a `next()` ni respondemos, el navegador se queda cargando de forma infinita.
-
-## Pruebas manuales
-Hice todas las pruebas que pedía la matriz:
-- Navegar por el sitio sin escribir URLs a mano.
-- Ver cómo el ID cambia y se muestra abajo.
-- Mandar el form vacío o con datos prohibidos (responde 400, muestra error y no borra lo que ya habías tipeado).
-- Mandar el form perfecto (responde 302, redirecciona y muestra la reserva nueva en la lista).
-- Entrar a una URL o un ID inventado para ver que devuelva la página 404.
-
-## Persistencia temporal
-Los datos del sistema viven en un array de JavaScript (`const reservas = []`). Esto significa que están en la memoria RAM. Si frenamos el servidor y lo volvemos a levantar con `npm start`, esa memoria se limpia y perdemos las altas nuevas, volviendo únicamente a las 4 reservas iniciales que dejamos escritas en el código.
-
-Por último, cuando guardamos una reserva bien, el server responde con un estado 302 (redirección). Esto cierra esa petición y hace que el navegador automáticamente dispare una petición GET nueva a `/reservas` para mostrarte la lista actualizada.
+*Arreglo de reservas: viveen la memoria RAM. al reiniciar el servidor, se borran las altas nuevas y vuelven a las iniciales
