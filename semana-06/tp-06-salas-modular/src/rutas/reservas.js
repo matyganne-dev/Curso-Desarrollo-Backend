@@ -7,7 +7,11 @@ const reservasRouter = express.Router();
 reservasRouter.use(middlewareReservas.prepararAreaReservas);
 
 reservasRouter.get("/", controlador.listarReservas);
-reservasRouter.post("/", middlewareReservas.validarReserva, controlador.crearReserva);
+reservasRouter.post(
+  "/",
+  middlewareReservas.validarReserva,
+  controlador.crearReserva,
+);
 reservasRouter.get("/nueva", controlador.mostrarFormulario);
 reservasRouter.get("/:id", controlador.mostrarDetalle);
 
