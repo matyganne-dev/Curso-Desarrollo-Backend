@@ -3,9 +3,12 @@ const expressLayouts = require("express-ejs-layouts");
 const morgan = require("morgan");
 const path = require("node:path");
 
+const config = require("./configuracion");
 const reservasRouter = require("./rutas/reservas");
 const servicioReservas = require("./servicios/reservas");
 const middlewareSolicitudes = require("./middleware/solicitudes");
+
+const formatoMorgan = config.entorno === "production" ? "combined" : "dev";
 
 const app = express();
 
@@ -15,7 +18,7 @@ app.set("views", path.join(__dirname, "..", "views"));
 app.set("layout", "layouts/main");
 
 // Pipeline de middleware
-app.use(morgan("dev"));
+app.use(morgan(formatoMorgan));
 app.use(middlewareSolicitudes.identificarSolicitud);
 app.use(middlewareSolicitudes.medirDuracion);
 app.use(expressLayouts);
