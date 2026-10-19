@@ -3,11 +3,11 @@ const expressLayouts = require("express-ejs-layouts");
 const morgan = require("morgan");
 const path = require("node:path");
 
-const config = require("./config/entorno.js");
+const { leerConfiguracion } = require("./config/entorno");
 const crearRouterReservas = require("./rutas/reservas");
 const middlewareSolicitudes = require("./middleware/solicitudes");
 
-const formatoMorgan = config.entorno === "production" ? "combined" : "dev";
+const config = leerConfiguracion();
 
 function crearApp(servicio) {
   const app = express();
@@ -20,7 +20,7 @@ function crearApp(servicio) {
   app.set("layout", "layouts/main");
 
   // Pipeline de middleware
-  app.use(morgan(formatoMorgan));
+  app.use(morgan(config.formatoRegistro));
   app.use(middlewareSolicitudes.identificarSolicitud);
   app.use(middlewareSolicitudes.medirDuracion);
   app.use(expressLayouts);
