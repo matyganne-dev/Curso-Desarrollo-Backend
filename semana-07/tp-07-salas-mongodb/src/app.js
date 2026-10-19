@@ -3,7 +3,7 @@ const expressLayouts = require("express-ejs-layouts");
 const morgan = require("morgan");
 const path = require("node:path");
 
-const config = require("./configuracion");
+const config = require("./config/entorno.js");
 const crearRouterReservas = require("./rutas/reservas");
 const middlewareSolicitudes = require("./middleware/solicitudes");
 
