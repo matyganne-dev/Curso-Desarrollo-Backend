@@ -1,7 +1,7 @@
 # Trabajo práctico 06
 
 ## Proyecto de partida y cambios
-Este proyecto es la refactorización del TP 05. La idea fue agarrar ese código donde estaba todo mezclado en el `index.js` y separarlo en módulos (rutas, controladores, servicios, etc.). Se mantuvo todo tal cual estaba funcionando, el pipeline y las vistas, pero ahora la arquitectura está ordenada y limpia en carpetas.
+Este proyecto es la refactorización del TP 05. La idea fue agarrar ese código donde estaba todo mezclado y separarlo en módulos usando Inyección de Dependencias. Se mantuvo todo tal cual estaba funcionando, el pipeline y las vistas, pero ahora la arquitectura está ordenada y limpia en carpetas.
 
 ## Instalación y ejecución
 1. Descargá o cloná el proyecto.
@@ -10,52 +10,48 @@ Este proyecto es la refactorización del TP 05. La idea fue agarrar ese código 
 4. Levantá el server con `npm start`.
 
 ## Configuración del entorno
-Agregué un archivo `.env` (ignoramos en Git) para manejar las variables de entorno. De ahí saco el puerto (`process.env.PORT`), así no queda fijo en el código. En `configuracion.js` valido que sea un número válido, y si falla, la aplicación se corta. Además, configuré Morgan para que cambie su formato dependiendo si el entorno es producción o desarrollo.
+Agregué la dependencia `dotenv` (y un `.env` que ignoramos en Git) para manejar las variables de entorno. De ahí saco el puerto (`process.env.PORT`). En `configuracion.js` valido estrictamente que sea un número entero entre 1 y 65535; si falla, la aplicación se corta sola. Además, configuré Morgan para que cambie a formato "combined" en producción y "dev" en desarrollo.
 
 ## Mapa de módulos y dependencias
 Seguimos usando Express, EJS, express-ejs-layouts y Morgan. Agregué ESLint y Prettier como dependencias de desarrollo.
-- **`src/configuracion.js`**: Levanta las variables del `.env` y valida el puerto.
-- **`src/app.js`**: Configura Express, las vistas EJS y ensambla el pipeline.
-- **`src/index.js`**: Es el punto de entrada, solo arranca el servidor.
+- **`src/index.js`**: Es el punto de entrada real. Acá nace la "semilla" (las 4 reservas iniciales), le paso esa semilla al servicio, se lo inyecto a la app y arranco el servidor.
+- **`src/app.js`**: Configura Express, las vistas EJS y ensambla el pipeline (ya no tiene el listen acá).
+- **`src/configuracion.js`**: Levanta las variables del `.env` y valida el puerto de forma aislada.
 - **`src/rutas/reservas.js`**: El enrutador que maneja los endpoints relativos.
-- **`src/controladores/reservas.js`**: Recibe las peticiones, llama al servicio y manda la respuesta.
-- **`src/servicios/reservas.js`**: Maneja el array de datos y toda la lógica.
+- **`src/controladores/reservas.js`**: Recibe las peticiones, llama al servicio inyectado y manda la respuesta.
+- **`src/servicios/reservas.js`**: Ya no tiene el array hardcodeado adentro. Ahora es una fábrica que recibe la semilla y maneja la lógica.
 - **`src/middleware/`**: Separé los logs de consola y las validaciones de datos en archivos aparte.
 
 ## Pipeline y contrato de rutas
-El pipeline quedó exactamente igual que en el TP anterior:
-Morgan -> identificarSolicitud -> medirDuracion -> expressLayouts -> estáticos -> parsers -> router de reservas -> 404 global.
+El pipeline quedó igual que en el TP anterior:
+Morgan dinámico -> identificarSolicitud -> medirDuracion -> expressLayouts -> estáticos -> parsers -> router de reservas -> 404 global.
 
 **Conceptos de arquitectura:**
-- El **controlador** funciona prácticamente como un puente. Se encarga de conectar el servicio con los endpoints o las peticiones que llegan, y ahí es donde se ejecuta el `res` (la respuesta).
-- En el router declaro **caminos relativos** (como `/nueva` o `/:id`) para que sea un bloque modular. Si el día de mañana me piden cambiar la ruta principal de `/reservas` a otra cosa, solo lo cambio en una sola línea en `app.js` y no tengo que modificar todas las rutas una por una.
+- **Servicio sin res:** El servicio es como el cerebro. Se encarga de procesar los datos y modificar el array, pero no maneja respuestas web, por eso no usa el `res`.
+- **Controlador:** Funciona prácticamente como un puente que conecta las peticiones web con el servicio, y ahí es donde se devuelve la respuesta final.
+- **Caminos relativos:** En el router declaro caminos relativos (como `/nueva` o `/:id`) para que el bloque sea modular. Si mañana cambia la ruta, solo se modifica una línea en `app.js`.
 
 ## Matriz antes/después
-Antes, en el TP5, tenía todo metido en un solo archivo. Ahora, el arreglo de datos y la lógica viven solamente en `servicios/reservas.js`.
-El servicio no usa `res` porque el `res` es una respuesta web, y el servicio no maneja eso. El servicio es como el cerebro: se encarga de recibir la data, agregar, buscar o modificar el array. El `res` viene de otro sector (del controlador).
+Antes, en el TP5, tenía todo metido en un solo archivo. Ahora está todo separado con Inyección de Dependencias.
 
-| Caso --- Estado esperado --- Evidencia |
-
-| Inicio | 200 | Navegación y solicitud ID |
-| Estado | 200 | JSON con reservas actuales |
-| Lista de reservas | 200 | Muestra el listado de reservas |
-| Nueva reserva (GET) | 200 | Muestra el formulario vacío |
-| Detalle existente | 200 | Muestra los datos de la reserva |
-| Detalle inexistente | 404 | Muestra página no encontrado |
-| Nueva reserva (POST) - Datos válidos | 302 | Redirige al listado |
-| Nueva reserva (POST) - Datos inválidos | 400 | Renderiza form con error |
+| Caso | Esperado | Evidencia a registrar |
+| Inicio y CSS | 200 | Navegación exitosa, CSS cargado y ID visible |
+| Estado inicial | 200 | JSON en `/estado` con cantidad inicial e ID |
+| Listado y detalle existente | 200 | Mismos datos y listado del TP 05 |
+| Detalle inexistente | 404 | Vista HTML de error, sin caída del servidor |
+| Formulario | 200 | Campos y valores de selección cargados |
+| POST vacío | 400 | Vista con error, sin alta en el arreglo |
+| Sala no permitida | 400 | Vista con error, sin alta |
+| Email sin @ | 400 | Vista con error, sin alta |
+| Personas 0, 7 o fraccionarias | 400 | Vista con error, sin alta |
+| POST válido | 302 y luego 200 | Nueva reserva visible en listado y en `/estado` |
+| URL inexistente | 404 | Vista HTML final de página no encontrada |
+| Reinicio | 200 | Regreso a las 4 reservas de la semilla inicial |
+| Puerto alternativo | 200 | El servidor responde en el puerto configurado |
+| Puerto inválido | No inicia | Mensaje explícito de error en consola y corte |
 
 ## Formato y análisis estático
 Antes de probar la app corrí `npm run check` (que ejecuta ESLint y Prettier). Prettier formateó los archivos y ESLint no devolvió ningún error, asegurando que el código está limpio y sin variables sin usar.
 
 ## Persistencia temporal y limites
-El único arreglo de reservas está guardado en la memoria temporal (RAM) adentro de `src/servicios/reservas.js`. El límite de esto es que si freno el servidor y lo vuelvo a arrancar, cualquier reserva que haya agregado desde el navegador se pierde y vuelven a quedar solamente las 4 iniciales que están escritas en el código.
-
-## explicacion extra
-*Servicio sin res : El servicio es el cerebro. se encarga en modificar y procesar los datos , no maneja las respuestas web, por eso no usa el res.
-
-*Controlador Funciona como un puente que conecta las peticiones web con el servicio, y luego devuelve la respuesta final
-
-*Cambios relativos router: se usa para que el bloque sea modular. esto sirve por si en un futuro cambia la ruta, solo se modifica una linea.
-
-*Arreglo de reservas: viveen la memoria RAM. al reiniciar el servidor, se borran las altas nuevas y vuelven a las iniciales
+El arreglo de reservas vive en la memoria RAM. A diferencia del TP05, ahora la semilla nace en `index.js` y se inyecta al servicio. El límite de esto es que si freno el servidor y lo vuelvo a arrancar, cualquier reserva nueva se borra y vuelven a quedar solamente las iniciales.
