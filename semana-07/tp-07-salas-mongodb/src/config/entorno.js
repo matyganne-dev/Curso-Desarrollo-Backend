@@ -1,26 +1,26 @@
 require("dotenv").config();
 
-const MINIMO_PUERTO = 1;
-const MAXIMO_PUERTO = 65535;
-
-const entorno = process.env.NODE_ENV || "development";
-
-const puerto = Number(process.env.PORT || 3000);
-
-const esEntero = Number.isInteger(puerto);
-const estaEnRango = puerto >= MINIMO_PUERTO && puerto <= MAXIMO_PUERTO;
-
-if (!esEntero || !estaEnRango) {
-  console.error(
-    `Error de configuración: PORT="${process.env.PORT}" no es un número entero válido entre ${MINIMO_PUERTO} y ${MAXIMO_PUERTO}.`,
-  );
-  process.exit(1);
+function leerConfiguracion(entorno = process.env) {
+  const puerto = Number(entorno.PORT ?? 3000);
+  if (!Number.isInteger(puerto) || puerto < 1 || puerto > 65535) {
+    throw new Error("PORT debe ser un entero entre 1 y 65535");
+  }
+  const formatoRegistro =
+    entorno.NODE_ENV === "production" ? "combined" : "dev";
+  return { puerto, formatoRegistro };
 }
 
-const mongodbUri = process.env.MONGODB_URI;
+function leerUriMongo(entorno = process.env) {
+  const uri = entorno.MONGODB_URI?.trim();
+  if (!uri) {
+    throw new Error("Falta MONGODB_URI en el entorno.");
+  }
+  if (!uri.startsWith("mongodb://") && !uri.startsWith("mongodb+srv://")) {
+    throw new Error(
+      "MONGODB_URI debe comenzar con mongodb:// o mongodb+srv://.",
+    );
+  }
+  return uri;
+}
 
-module.exports = {
-  puerto,
-  entorno,
-  mongodbUri,
-};
+module.exports = { leerConfiguracion, leerUriMongo };
