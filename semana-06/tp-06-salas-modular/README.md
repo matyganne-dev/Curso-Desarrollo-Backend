@@ -36,33 +36,20 @@ Morgan dinámico -> identificarSolicitud -> medirDuracion -> expressLayouts -> e
 Antes, en el TP5, tenía todo metido en un solo archivo. Ahora está todo separado con Inyección de Dependencias.
 
 | Caso | Esperado | Evidencia a registrar |
-
+|------|----------|------------------------|
 | Inicio y CSS | 200 | Navegación exitosa, CSS cargado y ID visible |
-
 | Estado inicial | 200 | JSON en `/estado` con cantidad inicial e ID |
-
 | Listado y detalle existente | 200 | Mismos datos y listado del TP 05 |
-
 | Detalle inexistente | 404 | Vista HTML de error, sin caída del servidor |
-
 | Formulario | 200 | Campos y valores de selección cargados |
-
 | POST vacío | 400 | Vista con error, sin alta en el arreglo |
-
 | Sala no permitida | 400 | Vista con error, sin alta |
-
 | Email sin @ | 400 | Vista con error, sin alta |
-
 | Personas 0, 7 o fraccionarias | 400 | Vista con error, sin alta |
-
 | POST válido | 302 y luego 200 | Nueva reserva visible en listado y en `/estado` |
-
 | URL inexistente | 404 | Vista HTML final de página no encontrada |
-
 | Reinicio | 200 | Regreso a las 4 reservas de la semilla inicial |
-
 | Puerto alternativo | 200 | El servidor responde en el puerto configurado |
-
 | Puerto inválido | No inicia | Mensaje explícito de error en consola y corte |
 
 
