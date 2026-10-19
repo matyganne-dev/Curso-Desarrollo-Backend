@@ -1,6 +1,8 @@
-const config = require("./config/entorno.js");
+const { leerConfiguracion } = require("./config/entorno");
 const crearServicio = require("./servicios/reservas");
 const crearApp = require("./app");
+
+const config = leerConfiguracion();
 
 const reservasIniciales = [
   {
@@ -46,5 +48,4 @@ const app = crearApp(servicio);
 
 app.listen(config.puerto, () => {
   console.log(`Aplicación disponible en http://localhost:${config.puerto}`);
-  console.log(`Entorno actual: ${config.entorno}`);
 });
