@@ -1,4 +1,4 @@
-const config = require("./configuracion");
+const config = require("./config/entorno.js");
 const crearServicio = require("./servicios/reservas");
 const crearApp = require("./app");
 
