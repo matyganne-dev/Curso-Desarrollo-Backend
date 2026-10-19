@@ -1,60 +1,82 @@
-# Trabajo práctico 06
+# TP 07 - Sistema de Reservas con MongoDB
 
-## Proyecto de partida y cambios
-Este proyecto es la refactorización del TP 05. La idea fue agarrar ese código donde estaba todo mezclado y separarlo en módulos usando Inyección de Dependencias. Se mantuvo todo tal cual estaba funcionando, el pipeline y las vistas, pero ahora la arquitectura está ordenada y limpia en carpetas.
+### 1. Punto de partida
+- **Repositorio/Copia:** `tp-07-salas-mongodb`
+- **Punto de partida:** Codigo continuado del TP 06 (Sistema de Reservas en memoria con Express), agregando persistencia de datos mediante consola.
 
-## Instalación y ejecución
-1. Descargá o cloná el proyecto.
-2. Abrí la terminal y corré `npm install` para bajar las dependencias.
-3. Creá el archivo `.env` en la raíz basándote en el `.env.example`.
-4. Levantá el server con `npm start`.
+### 2. Versiones y Entorno
+- **Node.js:** v20+ (Uso de `--env-file`)
+- **Mongoose:** ^9.11.2
+- **Base de Datos:** Se confirma el uso de **MongoDB Atlas Free Tier (M0)**.
 
-## Configuración del entorno
-Agregué la dependencia `dotenv` (y un `.env` que ignoramos en Git) para manejar las variables de entorno. De ahí saco el puerto (`process.env.PORT`). En `configuracion.js` valido estrictamente que sea un número entero entre 1 y 65535; si falla, la aplicación se corta sola. Además, configuré Morgan para que cambie a formato "combined" en producción y "dev" en desarrollo.
+### 3. Pasos de Instalacion y Preparacion
+Desde una descarga nueva del repositorio, ejecutar los siguientes pasos:
+1. Instalar las dependencias del proyecto: `npm install`
+2. **Preparar MongoDB Atlas:** 
+   - Crear un cluster gratuito (M0).
+   - Crear un usuario de base de datos con contrasena.
+   - Configurar la IP permitida en *Network Access* (ej: `0.0.0.0/0` para acceso global o IP especifica).
+3. **Entorno:** Copiar la plantilla `.env.example` (o crear el archivo) como `.env` en la raiz del proyecto. Asignar la cadena de conexion valida a la variable `MONGO_URI`.
 
-## Mapa de módulos y dependencias
-Seguimos usando Express, EJS, express-ejs-layouts y Morgan. Agregué ESLint y Prettier como dependencias de desarrollo.
-- **`src/index.js`**: Es el punto de entrada real. Acá nace la "semilla" (las 4 reservas iniciales), le paso esa semilla al servicio, se lo inyecto a la app y arranco el servidor.
-- **`src/app.js`**: Configura Express, las vistas EJS y ensambla el pipeline (ya no tiene el listen acá).
-- **`src/configuracion.js`**: Levanta las variables del `.env` y valida el puerto de forma aislada.
-- **`src/rutas/reservas.js`**: El enrutador que maneja los endpoints relativos.
-- **`src/controladores/reservas.js`**: Recibe las peticiones, llama al servicio inyectado y manda la respuesta.
-- **`src/servicios/reservas.js`**: Ya no tiene el array hardcodeado adentro.
-- **`src/middleware/`**: Separé los logs de consola y las validaciones de datos en archivos aparte.
+### 4. Diagnostico DNS y Comandos
+- **Diagnostico DNS:** No se requirieron ajustes ni resolutores alternativos; la conexion a Atlas se establecio correctamente de forma directa.
+- **Comandos utilizados:**
+  - Conexion: `node --env-file=.env scripts/comprobar-conexion.js`
+  - Creacion: `node --env-file=.env scripts/crear-reserva.js`
+  - Listado: `node --env-file=.env scripts/listar-reservas.js`
+  - Calidad de codigo: `npm run format` y `npm run check`
+  - Arranque web: `npm start`
 
-## Pipeline y contrato de rutas
-El pipeline quedó igual que en el TP anterior:
+### 5. Mapa de Archivos y Conceptos Mongoose
+**Archivos principales agregados:**
+- `src/config/base-datos.js`: Logica de conexion a Atlas.
+- `src/modelos/reserva.js`: Definicion del esquema y modelo.
+- `scripts/`: Programas CLI para probar operaciones.
 
-Morgan dinámico -> identificarSolicitud -> medirDuracion -> expressLayouts -> estáticos -> parsers -> router de reservas -> 404 global.
+**Explicacion de conceptos:**
+- **Esquema (Schema):** Define la estructura, los tipos de datos y las reglas de validacion de los documentos de reserva.
+- **Modelo (Model):** Es el constructor compilado a partir del Esquema. Funciona como la interfaz que permite a Node.js realizar operaciones (CRUD) sobre la base de datos.
+- **Coleccion:** Agrupacion de documentos en MongoDB. En este proyecto se llama `reservas` y se almacena en la base `reservas_salas_u7`.
 
-**Conceptos de arquitectura:**
-- **Servicio sin res:** El servicio es como el cerebro. Se encarga de procesar los datos y modificar el array, pero no maneja respuestas web, por eso no usa el `res`.
-- **Controlador:** Funciona prácticamente como un puente que conecta las peticiones web con el servicio, y ahí es donde se devuelve la respuesta final.
-- **Caminos relativos:** En el router declaro caminos relativos (como `/nueva` o `/:id`) para que el bloque sea modular. Si mañana cambia la ruta, solo se modifica una línea en `app.js`.
+### 6. Campos y Reglas de Validacion
+- `estudiante`: String, obligatorio.
+- `email`: String, obligatorio, validado con RegEx (requiere '@').
+- `sala`: String, obligatorio, restringido a Enum.
+- `fecha`: String/Date, obligatorio.
+- `turno`: String, obligatorio, restringido a Enum.
+- `personas`: Number, obligatorio, limite numerico (`min: 1`, `max: 6`).
+- **Limites que todavia no se controlan:** No se valida la superposicion de turnos (dos reservas para la misma sala en la misma fecha y turno), ni si la fecha de la reserva corresponde a un dia en el pasado.
 
-## Matriz antes/después
-Antes, en el TP5, tenía todo metido en un solo archivo. Ahora está todo separado con Inyección de Dependencias.
+### 7. Matriz de Pruebas y Evidencia de Persistencia
 
-| Caso | Esperado | Evidencia a registrar |
-|------|----------|------------------------|
-| Inicio y CSS | 200 | Navegación exitosa, CSS cargado y ID visible |
-| Estado inicial | 200 | JSON en `/estado` con cantidad inicial e ID |
-| Listado y detalle existente | 200 | Mismos datos y listado del TP 05 |
-| Detalle inexistente | 404 | Vista HTML de error, sin caída del servidor |
-| Formulario | 200 | Campos y valores de selección cargados |
-| POST vacío | 400 | Vista con error, sin alta en el arreglo |
-| Sala no permitida | 400 | Vista con error, sin alta |
-| Email sin @ | 400 | Vista con error, sin alta |
-| Personas 0, 7 o fraccionarias | 400 | Vista con error, sin alta |
-| POST válido | 302 y luego 200 | Nueva reserva visible en listado y en `/estado` |
-| URL inexistente | 404 | Vista HTML final de página no encontrada |
-| Reinicio | 200 | Regreso a las 4 reservas de la semilla inicial |
-| Puerto alternativo | 200 | El servidor responde en el puerto configurado |
-| Puerto inválido | No inicia | Mensaje explícito de error en consola y corte |
+**Evidencia visual:**
+* **1. Transcripcion de ejecuciones en terminal:** ![Terminal](./evidencias/EV1.png)
+* **2. Captura de MongoDB Compass (Opcional):** ![Compass](./evidencias/EV2.png)
+* **3. Captura de MongoDB Atlas (Requerido):** ![Atlas](./evidencias/EV3-Atlas.png)
 
+**Matriz de pruebas ejecutada:**
+*(La base inicial contaba con 2 registros previos por la evidencia de persistencia)*
 
-## Formato y análisis estático
-Antes de probar la app corrí `npm run check` (que ejecuta ESLint y Prettier). Prettier formateó los archivos y ESLint no devolvió ningún error, asegurando que el código está limpio y sin variables sin usar.
+| Caso | Resultado esperado | Resultado observado | Cantidad Antes | Cantidad Despues |
+| :--- | :--- | :--- | :---: | :---: |
+| Conexion valida | Confirmacion y proceso terminado | Conexion exitosa a MongoDB Atlas | - | - |
+| Fallo DNS | Registrar codigo y solucion | No ocurrio fallo de DNS en pruebas | - | - |
+| Variable vacia | Fallo de configuracion | Error generico de conexion | - | - |
+| Contrasena incorrecta | Fallo de autenticacion | Error: MongoServerError | 2 | 2 |
+| Coleccion vacia | Listado de cantidad 0 | No aplicable (Base con registros) | - | - |
+| Reserva valida | Se guarda y devuelve `_id` | Reserva creada _id: 6ad5cf... | 2 | 3 |
+| Consulta desde nuevo proceso | Recupera ese `_id` | Recupero tabla con cantidad: 3 | 3 | 3 |
+| Segunda consulta | No agrega registros | Recupero tabla con cantidad: 3 | 3 | 3 |
+| Estudiante vacio | Rechazo, cantidad sin cambios | ValidationError: estudiante | 3 | 3 |
+| Email sin @ | Rechazo, cantidad sin cambios | ValidationError: email | 3 | 3 |
+| Sala no permitida | Rechazo, cantidad sin cambios | ValidationError: sala | 3 | 3 |
+| Fecha vacia | Rechazo, cantidad sin cambios | ValidationError: fecha | 3 | 3 |
+| Personas 0, 7 o 2.5 | Rechazo, cantidad sin cambios | ValidationError: personas | 3 | 3 |
+| Personas texto | Rechazo de conversion | ValidationError / CastError | 3 | 3 |
 
-## Persistencia temporal y limites
-El arreglo de reservas vive en la memoria RAM. A diferencia del TP05, ahora la semilla nace en `index.js` y se inyecta al servicio. El límite de esto es que si freno el servidor y lo vuelvo a arrancar, cualquier reserva nueva se borra y vuelven a quedar solamente las iniciales.
+### 8. Continuidad en Memoria y Proximos Pasos (Unidad 8)
+La aplicacion web (`npm start`) continua funcionando de forma aislada utilizando un **arreglo en memoria** para almacenar las reservas (`src/servicios/reservas.js`). La persistencia desarrollada en este TP 07 se implemento unicamente a nivel de *scripts de consola* de manera segura para comprender el ODM Mongoose. 
+**En la Unidad 8**, se abordara la integracion directa de Mongoose en las rutas y servicios de Express, reemplazando el almacenamiento en memoria volatil por la base de datos MongoDB Atlas.
+
+### 9. Confirmacion de Seguridad
+Se confirma que los archivos sensibles como el **`.env`** (que contiene la URI y credenciales), el directorio **`node_modules/`**, y cualquier dato personal o contrasena de cluster no han sido publicados en este repositorio gracias a las reglas configuradas en el `.gitignore`.
