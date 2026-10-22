@@ -44,6 +44,12 @@ const reservaSchema = new mongoose.Schema(
         message: "La cantidad de personas debe ser un número entero",
       },
     },
+    estado: {
+      type: String,
+      required: true,
+      enum: ["pendiente", "confirmada"],
+      default: "pendiente",
+    },
   },
   {
     collection: "reservas",
