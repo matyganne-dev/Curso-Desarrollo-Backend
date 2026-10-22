@@ -2,58 +2,55 @@ const express = require("express");
 const expressLayouts = require("express-ejs-layouts");
 const morgan = require("morgan");
 const path = require("node:path");
+const { identificarSolicitud, medirDuracion } = require("./middleware/solicitudes");
+const { crearManejadorErrores } = require("./middleware/errores");
+const { crearControladorReservas } = require("./controladores/reservas");
+const { crearRouterReservas } = require("./rutas/reservas");
+const { crearRouterReservasApi } = require("./rutas/reservas-api");
+const crearMiddlewareReservas = require("./middleware/reservas");
 
-const { leerConfiguracion } = require("./config/entorno");
-const crearRouterReservas = require("./rutas/reservas");
-const middlewareSolicitudes = require("./middleware/solicitudes");
-
-const config = leerConfiguracion();
-
-function crearApp(servicio) {
+function crearApp({ servicioReservas, formatoRegistro }) {
   const app = express();
+  const controlador = crearControladorReservas(servicioReservas);
+  const middleware = crearMiddlewareReservas(servicioReservas);
 
-  const reservasRouter = crearRouterReservas(servicio);
-
-  // Configuración de vistas
   app.set("view engine", "ejs");
   app.set("views", path.join(__dirname, "..", "views"));
   app.set("layout", "layouts/main");
 
-  // Pipeline de middleware
-  app.use(morgan(config.formatoRegistro));
-  app.use(middlewareSolicitudes.identificarSolicitud);
-  app.use(middlewareSolicitudes.medirDuracion);
+  app.use(morgan(formatoRegistro));
+  app.use(identificarSolicitud);
+  app.use(medirDuracion);
   app.use(expressLayouts);
   app.use(express.static(path.join(__dirname, "..", "public")));
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
 
-  // Ruta principale
   app.get("/", (req, res) => {
-    res.render("inicio", {
-      titulo: "Inicio - Sistema de Reservas",
-    });
+    res.render("inicio", { titulo: "Sistema de reservas" });
   });
 
-  app.get("/estado", (req, res) => {
-    res.json({
-      servicio: "activo",
-      reservas: servicio.contar(),
-      solicitudId: res.locals.solicitudId,
-    });
-  });
-
-  // Montaje del router modular
-  app.use("/reservas", reservasRouter);
+  app.use("/api/reservas", crearRouterReservasApi(controlador, middleware));
+  app.use("/reservas", crearRouterReservas(controlador, middleware));
 
   app.use((req, res) => {
+    if (req.path.startsWith("/api/")) {
+      return res.status(404).json({ error: "Ruta no encontrada." });
+    }
     res.status(404).render("no-encontrado", {
-      titulo: "Página no encontrada",
-      mensaje: "La dirección solicitada no existe.",
+      titulo: "Pagina no encontrada",
+      mensaje: "La direccion solicitada no existe.",
     });
   });
+
+  app.use(
+    crearManejadorErrores({
+      vistaFormulario: "reservas/nueva",
+      tituloFormulario: "Nueva reserva",
+    })
+  );
 
   return app;
 }
 
-module.exports = crearApp;
+module.exports = { crearApp };
