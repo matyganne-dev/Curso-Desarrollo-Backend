@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 function leerConfiguracion(entorno = process.env) {
   const puerto = Number(entorno.PORT ?? 3000);
   if (!Number.isInteger(puerto) || puerto < 1 || puerto > 65535) {
