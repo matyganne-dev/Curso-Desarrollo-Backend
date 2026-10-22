@@ -1,51 +1,52 @@
 const { leerConfiguracion } = require("./config/entorno");
-const crearServicio = require("./servicios/reservas");
-const crearApp = require("./app");
+const { conectarBaseDatos, desconectarBaseDatos } = require("./config/base-datos");
+const { crearServicioReservasMongo } = require("./servicios/reservas-mongo");
+const { crearApp } = require("./app");
 
-const config = leerConfiguracion();
+async function main() {
+  const { puerto, formatoRegistro } = leerConfiguracion();
 
-const reservasIniciales = [
-  {
-    id: 1,
-    estudiante: "Lisa Su",
-    email: "lisa@amd.com",
-    sala: "Sala Norte",
-    fecha: "2026-09-23",
-    turno: "Noche",
-    personas: 2,
-  },
-  {
-    id: 2,
-    estudiante: "Jensen Huang",
-    email: "jensen@nvidia.com",
-    sala: "Sala Sur",
-    fecha: "2026-09-24",
-    turno: "Tarde",
-    personas: 4,
-  },
-  {
-    id: 3,
-    estudiante: "Pat Gelsinger",
-    email: "pat@intel.com",
-    sala: "Sala Multimedia",
-    fecha: "2026-09-25",
-    turno: "Mañana",
-    personas: 3,
-  },
-  {
-    id: 4,
-    estudiante: "Satya Nadella",
-    email: "satya@microsoft.com",
-    sala: "Sala Norte",
-    fecha: "2026-09-26",
-    turno: "Noche",
-    personas: 5,
-  },
-];
+  await conectarBaseDatos();
+  const servicioReservas = crearServicioReservasMongo();
+  const app = crearApp({ servicioReservas, formatoRegistro });
 
-const servicio = crearServicio(reservasIniciales);
-const app = crearApp(servicio);
+  const servidor = app.listen(puerto, () => {
+    console.log(`Aplicación disponible en http://localhost:${puerto}`);
+  });
 
-app.listen(config.puerto, () => {
-  console.log(`Aplicación disponible en http://localhost:${config.puerto}`);
+  let cerrando = false;
+  function cerrar() {
+    if (cerrando) return;
+    cerrando = true;
+    servidor.close(async () => {
+      try {
+        await desconectarBaseDatos();
+      } catch (error) {
+        console.error("Error al cerrar:", error.name);
+        process.exitCode = 1;
+      }
+    });
+  }
+
+  process.once("SIGINT", cerrar);
+  process.once("SIGTERM", cerrar);
+
+  servidor.on("error", (error) => {
+    console.error("No se pudo escuchar el puerto:", error.code);
+    process.exitCode = 1;
+    desconectarBaseDatos().catch((fallo) => {
+      console.error("Error al cerrar:", fallo.name);
+    });
+  });
+}
+
+main().catch(async (error) => {
+  console.error("No se pudo iniciar la aplicación:", error);
+  console.error("Revisar entorno, DNS, red, acceso de Atlas y puerto.");
+  process.exitCode = 1;
+  try {
+    await desconectarBaseDatos();
+  } catch (fallo) {
+    console.error("Error al cerrar:", fallo.name);
+  }
 });
