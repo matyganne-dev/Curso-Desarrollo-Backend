@@ -1,0 +1,15 @@
+<h1 class="titulo-principal"><%= titulo %></h1>
+  
+<div class="tarjeta-detalle">
+  <ul>
+    <li><strong>Identificador:</strong> #<%= reserva.id %></li>
+    <li><strong>Estudiante:</strong> <%= reserva.estudiante %></li>
+    <li><strong>Email:</strong> <%= reserva.email %></li>
+    <li><strong>Sala asignada:</strong> <span class="etiqueta"><%= reserva.sala %></span></li>
+    <li><strong>Fecha:</strong> <%= reserva.fecha %></li>
+    <li><strong>Turno:</strong> <%= reserva.turno %></li>
+    <li><strong>Cantidad de personas:</strong> <%= reserva.personas %></li>
+  </ul>
+</div>
+
+<p style="margin-top: 1.5rem;"><a href="/reservas" class="enlace-basico">Volver al listado</a></p>
