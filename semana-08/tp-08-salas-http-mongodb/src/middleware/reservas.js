@@ -13,7 +13,11 @@ function crearMiddleware(servicio) {
 
     const personas = Number(req.body.personas);
     const turnosPermitidos = ["Mañana", "Tarde", "Noche"];
-    const salasPermitidas = servicio.obtenerSalasPermitidas();
+    
+    // Evita el TypeError si el servicio no exporta la función
+    const salasPermitidas = (typeof servicio.obtenerSalasPermitidas === "function") 
+      ? servicio.obtenerSalasPermitidas() 
+      : ["Sala Norte", "Sala Sur", "Sala Multimedia"];
 
     if (
       !estudiante ||
@@ -28,6 +32,13 @@ function crearMiddleware(servicio) {
       personas < 1 ||
       personas > 6
     ) {
+      
+      if (req.baseUrl === "/api/reservas") {
+        return res.status(400).json({
+          error: "Completá todos los campos con valores válidos."
+        });
+      }
+
       return res.status(400).render("reservas/nueva", {
         titulo: "Nueva Reserva",
         error: "Completá todos los campos con valores válidos.",

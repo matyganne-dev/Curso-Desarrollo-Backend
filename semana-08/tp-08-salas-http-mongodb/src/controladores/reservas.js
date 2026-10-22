@@ -1,47 +1,63 @@
-function crearControlador(servicio) {
-  function listarReservas(req, res) {
+function crearControladorReservas(servicio) {
+  async function listar(req, res) {
+    const reservas = await servicio.listar();
     res.render("reservas/lista", {
-      titulo: "Listado de Reservas",
-      reservas: servicio.obtenerTodas(),
+      titulo: "Reservas de salas",
+      reservas,
     });
   }
 
   function mostrarFormulario(req, res) {
     res.render("reservas/nueva", {
-      titulo: "Nueva Reserva",
+      titulo: "Nueva reserva",
       error: null,
       valores: {},
     });
   }
 
-  function mostrarDetalle(req, res) {
-    const id = Number(req.params.id);
-    const reserva = servicio.obtenerPorId(id);
-
+  async function mostrarDetalle(req, res) {
+    const reserva = await servicio.obtenerPorId(req.params.id);
     if (!reserva) {
       return res.status(404).render("no-encontrado", {
         titulo: "Reserva no encontrada",
         mensaje: "No existe una reserva con ese identificador.",
       });
     }
-
-    res.render("reservas/detalle", {
-      titulo: `Detalle de la Reserva #${reserva.id}`,
-      reserva: reserva,
-    });
+    res.render("reservas/detalle", { titulo: "Detalle de reserva", reserva });
   }
 
-  function crearReserva(req, res) {
-    servicio.agregar(req.reservaValidada);
+  async function crear(req, res) {
+    await servicio.crear(req.reservaValidada);
     res.redirect("/reservas");
   }
 
+  async function listarApi(req, res) {
+    const reservas = await servicio.listar(req.query.sala);
+    res.json(reservas);
+  }
+
+  async function obtenerApi(req, res) {
+    const reserva = await servicio.obtenerPorId(req.params.id);
+    if (!reserva) {
+      return res.status(404).json({ error: "Reserva no encontrada." });
+    }
+    res.json(reserva);
+  }
+
+  async function crearApi(req, res) {
+    const reserva = await servicio.crear(req.reservaValidada);
+    res.location(`/api/reservas/${reserva.id}`).status(201).json(reserva);
+  }
+
   return {
-    listarReservas,
+    listar,
     mostrarFormulario,
     mostrarDetalle,
-    crearReserva,
+    crear,
+    listarApi,
+    obtenerApi,
+    crearApi,
   };
 }
 
-module.exports = crearControlador;
+module.exports = { crearControladorReservas };
