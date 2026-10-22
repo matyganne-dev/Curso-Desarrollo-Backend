@@ -1,25 +1,16 @@
 const express = require("express");
-const crearControlador = require("../controladores/reservas");
-const crearMiddleware = require("../middleware/reservas");
 
-function crearRouter(servicio) {
-  const controlador = crearControlador(servicio);
-  const middlewareReservas = crearMiddleware(servicio);
+function crearRouterReservas(controlador, middleware) {
+  const router = express.Router();
 
-  const reservasRouter = express.Router();
+  router.use(middleware.prepararAreaReservas);
 
-  reservasRouter.use(middlewareReservas.prepararAreaReservas);
+  router.get("/", controlador.listar);
+  router.get("/nueva", controlador.mostrarFormulario);
+  router.post("/", middleware.validarReserva, controlador.crear);
+  router.get("/:id", controlador.mostrarDetalle);
 
-  reservasRouter.get("/", controlador.listarReservas);
-  reservasRouter.post(
-    "/",
-    middlewareReservas.validarReserva,
-    controlador.crearReserva,
-  );
-  reservasRouter.get("/nueva", controlador.mostrarFormulario);
-  reservasRouter.get("/:id", controlador.mostrarDetalle);
-
-  return reservasRouter;
+  return router;
 }
 
-module.exports = crearRouter;
+module.exports = { crearRouterReservas };
