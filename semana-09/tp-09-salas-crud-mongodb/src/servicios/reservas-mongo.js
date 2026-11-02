@@ -45,12 +45,7 @@ function crearServicioReservasMongo() {
   }
 
   async function obtenerPorId(id) {
-    if (!mongoose.isObjectIdOrHexString(id)) {
-      const error = new Error("Identificador inválido");
-      error.codigo = "ID_INVALIDO";
-      throw error;
-    }
-
+    comprobarId(id);
     const documento = await Reserva.findById(id).lean();
     return documento ? representarReserva(documento) : null;
   }
