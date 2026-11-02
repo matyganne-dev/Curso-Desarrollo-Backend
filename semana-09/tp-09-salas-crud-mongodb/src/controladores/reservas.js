@@ -49,6 +49,30 @@ function crearControladorReservas(servicio) {
     res.location(`/api/reservas/${reserva.id}`).status(201).json(reserva);
   }
 
+  async function reemplazarApi(req, res) {
+    const reserva = await servicio.reemplazar(req.params.id, req.cambiosValidos);
+    if (!reserva) {
+      return res.status(404).json({ error: "Reserva no encontrada." });
+    }
+    res.json(reserva);
+  }
+
+  async function actualizarApi(req, res) {
+    const reserva = await servicio.actualizar(req.params.id, req.cambiosValidos);
+    if (!reserva) {
+      return res.status(404).json({ error: "Reserva no encontrada." });
+    }
+    res.json(reserva);
+  }
+
+  async function eliminarApi(req, res) {
+    const eliminada = await servicio.eliminar(req.params.id);
+    if (!eliminada) {
+      return res.status(404).json({ error: "Reserva no encontrada." });
+    }
+    res.status(204).end();
+  }
+
   return {
     listar,
     mostrarFormulario,
@@ -57,6 +81,9 @@ function crearControladorReservas(servicio) {
     listarApi,
     obtenerApi,
     crearApi,
+    reemplazarApi,
+    actualizarApi,
+    eliminarApi,
   };
 }
 
