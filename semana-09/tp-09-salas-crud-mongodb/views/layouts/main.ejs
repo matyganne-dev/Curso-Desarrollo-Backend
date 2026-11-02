@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= titulo %></title>
+  <link rel="stylesheet" href="/css/estilos.css">
+</head>
+<body>
+
+  <header class="header-principal">
+    <div class="marca-contenedor">
+      <p class="marca-texto">Gestión de Salas de Estudio</p>
+    </div>
+    <nav class="nav-principal">
+      <ul class="nav-links">
+        <li><a href="/">Inicio</a></li>
+        <li><a href="/reservas">Ver Reservas</a></li>
+        <li><a href="/reservas/nueva">Crear Reserva</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="contenedor-principal">
+    <%- body %>
+  </main>
+
+  <footer class="pie-pagina">
+    <p>Solicitud: <%= solicitudId %></p>
+  </footer>
+
+</body>
+</html>
