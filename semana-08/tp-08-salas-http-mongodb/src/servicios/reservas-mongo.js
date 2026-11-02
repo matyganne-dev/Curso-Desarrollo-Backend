@@ -15,6 +15,12 @@ function representarReserva(documento) {
 }
 
 function crearServicioReservasMongo() {
+
+  //conteo persistente e identificador pedido por feedback tp8
+  async function contar() {
+    return await Reserva.countDocuments();
+  }
+
   async function listar(sala) {
     const filtro = {};
     if (sala !== undefined) {
@@ -25,7 +31,7 @@ function crearServicioReservasMongo() {
       }
       filtro.sala = sala.trim();
     }
-    
+
     const documentos = await Reserva.find(filtro).lean();
     return documentos.map(representarReserva);
   }
@@ -36,7 +42,7 @@ function crearServicioReservasMongo() {
       error.codigo = "ID_INVALIDO";
       throw error;
     }
-    
+
     const documento = await Reserva.findById(id).lean();
     return documento ? representarReserva(documento) : null;
   }
@@ -57,7 +63,7 @@ function crearServicioReservasMongo() {
     return ["Sala Norte", "Sala Sur", "Sala Multimedia"];
   }
 
-  return { listar, obtenerPorId, crear, obtenerSalasPermitidas };
+  return { listar, obtenerPorId, crear, obtenerSalasPermitidas, contar };
 }
 
 module.exports = { crearServicioReservasMongo };
