@@ -63,7 +63,62 @@ function crearServicioReservasMongo() {
     return ["Sala Norte", "Sala Sur", "Sala Multimedia"];
   }
 
-  return { listar, obtenerPorId, crear, obtenerSalasPermitidas, contar };
+  //Reemplazo
+  async function reemplazar(id, datos) {
+    comprobarId(id);
+    // PUT exige los 7 campos editables explícitos
+    const reemplazo = {
+      estudiante: datos.estudiante,
+      email: datos.email,
+      sala: datos.sala,
+      fecha: datos.fecha,
+      turno: datos.turno,
+      personas: datos.personas,
+      estado: datos.estado
+    };
+
+    const documento = await Reserva.findOneAndReplace({ _id: id }, reemplazo, {
+      runValidators: true,
+      returnDocument: "after",
+      upsert: false,
+    });
+    return documento ? representarReserva(documento) : null;
+  }
+
+  //Actualizar
+  async function actualizar(id, datos) {
+    comprobarId(id);
+    const cambios = {};
+
+    // PATCH solo permite modificar 'personas' y 'estado'
+    for (const campo of ["personas", "estado"]) {
+      if (Object.hasOwn(datos, campo)) {
+        cambios[campo] = datos[campo];
+      }
+    }
+
+    if (Object.keys(cambios).length === 0) {
+      const error = new Error("Actualización vacía");
+      error.codigo = "ENTRADA_INVALIDA";
+      throw error;
+    }
+
+    const documento = await Reserva.findOneAndUpdate(
+      { _id: id },
+      { $set: cambios },
+      { runValidators: true, returnDocument: "after", upsert: false }
+    );
+    return documento ? representarReserva(documento) : null;
+  }
+
+  //Eliminar
+  async function eliminar(id) {
+    comprobarId(id);
+    const resultado = await Reserva.deleteOne({ _id: id });
+    return resultado.deletedCount === 1;
+  }
+
+  return { listar, obtenerPorId, crear, obtenerSalasPermitidas, contar, reemplazar, actualizar, eliminar };
 }
 
 module.exports = { crearServicioReservasMongo };
