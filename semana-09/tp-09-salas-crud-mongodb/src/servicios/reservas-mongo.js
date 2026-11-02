@@ -14,6 +14,14 @@ function representarReserva(documento) {
   };
 }
 
+function comprobarId(id) {
+  if (!mongoose.isObjectIdOrHexString(id)) {
+    const error = new Error("Identificador inválido");
+    error.codigo = "ID_INVALIDO";
+    throw error;
+  }
+}
+
 function crearServicioReservasMongo() {
 
   //conteo persistente e identificador pedido por feedback tp8
