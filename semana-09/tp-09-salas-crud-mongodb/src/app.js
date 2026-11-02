@@ -30,6 +30,20 @@ function crearApp({ servicioReservas, formatoRegistro }) {
     res.render("inicio", { titulo: "Sistema de reservas" });
   });
 
+  // endpoint faltante de estado del tp 8 - devuelvo en json como teniamos anteriomente
+  app.get("/estado", async (req, res, next) => {
+    try {
+      const reservas = await servicioReservas.contar();
+      res.json({
+        servicio: "activo",
+        reservas: reservas,
+        solicitudId: res.locals.solicitudId
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   app.use("/api/reservas", crearRouterReservasApi(controlador, middleware));
   app.use("/reservas", crearRouterReservas(controlador, middleware));
 
