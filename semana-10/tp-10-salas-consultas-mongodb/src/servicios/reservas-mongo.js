@@ -120,12 +120,21 @@ function crearServicioReservasMongo() {
     return resultado.deletedCount === 1;
   }
 
-  async function consultar(sala) {
+  async function consultar(sala, orden = "estudiante") {
     const filtro = {};
     if (sala !== undefined) {
       filtro.sala = sala.trim();
     }
-    const documentos = await Reserva.find(filtro).lean();
+
+    let ordenMongo = { estudiante: 1, _id: 1 };
+    if (orden === "personas-asc") {
+      ordenMongo = { personas: 1, _id: 1 };
+    }
+    if (orden === "personas-desc") {
+      ordenMongo = { personas: -1, _id: 1 };
+    }
+
+    const documentos = await Reserva.find(filtro).sort(ordenMongo).lean();
     return documentos.map(representarReserva);
   }
 

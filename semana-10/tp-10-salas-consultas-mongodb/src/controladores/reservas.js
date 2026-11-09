@@ -32,7 +32,7 @@ function crearControladorReservas(servicio) {
   }
 
   async function listarApi(req, res) {
-    const permitidos = ["sala"];
+    const permitidos = ["sala", "orden"];
     for (const campo of Object.keys(req.query)) {
       if (!permitidos.includes(campo)) {
         return res.status(400).json({ error: "Parámetro no permitido." });
@@ -48,7 +48,19 @@ function crearControladorReservas(servicio) {
       }
     }
 
-    const resultado = await servicio.consultar(sala);
+    let orden = "estudiante";
+    if (req.query.orden !== undefined) {
+      orden = req.query.orden;
+      if (
+        orden !== "estudiante" &&
+        orden !== "personas-asc" &&
+        orden !== "personas-desc"
+      ) {
+        return res.status(400).json({ error: "Orden no permitido." });
+      }
+    }
+
+    const resultado = await servicio.consultar(sala, orden);
     res.json(resultado);
   }
 
