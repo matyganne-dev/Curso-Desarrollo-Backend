@@ -32,8 +32,24 @@ function crearControladorReservas(servicio) {
   }
 
   async function listarApi(req, res) {
-    const reservas = await servicio.listar(req.query.sala);
-    res.json(reservas);
+    const permitidos = ["sala"];
+    for (const campo of Object.keys(req.query)) {
+      if (!permitidos.includes(campo)) {
+        return res.status(400).json({ error: "Parámetro no permitido." });
+      }
+    }
+
+    const sala = req.query.sala;
+    if (sala !== undefined) {
+      if (typeof sala !== "string" || sala.trim() === "") {
+        return res
+          .status(400)
+          .json({ error: "El texto de sala debe tener contenido." });
+      }
+    }
+
+    const resultado = await servicio.consultar(sala);
+    res.json(resultado);
   }
 
   async function obtenerApi(req, res) {
