@@ -5,17 +5,23 @@ function crearMiddleware(servicio) {
   }
 
   function validarReserva(req, res, next) {
-
-    // Mejoras a raiz del feedback tp8 
+    // Mejoras a raiz del feedback tp8
     // Barrera 1 - Evitar TypeError si el cuerpo está ausente o mal formado
-    if (!req.body || typeof req.body !== "object" || Array.isArray(req.body) || Object.keys(req.body).length === 0) {
+    if (
+      !req.body ||
+      typeof req.body !== "object" ||
+      Array.isArray(req.body) ||
+      Object.keys(req.body).length === 0
+    ) {
       if (req.baseUrl === "/api/reservas") {
-        return res.status(400).json({ error: "Completá todos los campos con valores válidos." });
+        return res
+          .status(400)
+          .json({ error: "Completá todos los campos con valores válidos." });
       }
       return res.status(400).render("reservas/nueva", {
         titulo: "Nueva Reserva",
         error: "Completá todos los campos con valores válidos.",
-        valores: {}
+        valores: {},
       });
     }
 
@@ -32,12 +38,14 @@ function crearMiddleware(servicio) {
       (typeof personas !== "number" && typeof personas !== "string")
     ) {
       if (req.baseUrl === "/api/reservas") {
-        return res.status(400).json({ error: "Completá todos los campos con valores válidos." });
+        return res
+          .status(400)
+          .json({ error: "Completá todos los campos con valores válidos." });
       }
       return res.status(400).render("reservas/nueva", {
         titulo: "Nueva Reserva",
         error: "Completá todos los campos con valores válidos.",
-        valores: req.body
+        valores: req.body,
       });
     }
 
@@ -52,9 +60,10 @@ function crearMiddleware(servicio) {
     const turnosPermitidos = ["Mañana", "Tarde", "Noche"];
 
     // Evita el TypeError si el servicio no exporta la función
-    const salasPermitidas = (typeof servicio.obtenerSalasPermitidas === "function")
-      ? servicio.obtenerSalasPermitidas()
-      : ["Sala Norte", "Sala Sur", "Sala Multimedia"];
+    const salasPermitidas =
+      typeof servicio.obtenerSalasPermitidas === "function"
+        ? servicio.obtenerSalasPermitidas()
+        : ["Sala Norte", "Sala Sur", "Sala Multimedia"];
 
     if (
       !estudianteLimpio ||
@@ -69,10 +78,9 @@ function crearMiddleware(servicio) {
       personasNum < 1 ||
       personasNum > 6
     ) {
-
       if (req.baseUrl === "/api/reservas") {
         return res.status(400).json({
-          error: "Completá todos los campos con valores válidos."
+          error: "Completá todos los campos con valores válidos.",
         });
       }
 
@@ -89,7 +97,7 @@ function crearMiddleware(servicio) {
       sala: salaLimpio,
       fecha: fechaLimpio,
       turno: turnoLimpio,
-      personas: personasNum
+      personas: personasNum,
     };
     next();
   }

@@ -10,7 +10,7 @@ function representarReserva(documento) {
     fecha: documento.fecha,
     turno: documento.turno,
     personas: documento.personas,
-    estado: documento.estado
+    estado: documento.estado,
   };
 }
 
@@ -23,7 +23,6 @@ function comprobarId(id) {
 }
 
 function crearServicioReservasMongo() {
-
   //conteo persistente e identificador pedido por feedback tp8
   async function contar() {
     return await Reserva.countDocuments();
@@ -57,7 +56,7 @@ function crearServicioReservasMongo() {
       sala: datos.sala,
       fecha: datos.fecha,
       turno: datos.turno,
-      personas: datos.personas
+      personas: datos.personas,
     });
     return representarReserva(documento);
   }
@@ -77,7 +76,7 @@ function crearServicioReservasMongo() {
       fecha: datos.fecha,
       turno: datos.turno,
       personas: datos.personas,
-      estado: datos.estado
+      estado: datos.estado,
     };
 
     const documento = await Reserva.findOneAndReplace({ _id: id }, reemplazo, {
@@ -109,7 +108,7 @@ function crearServicioReservasMongo() {
     const documento = await Reserva.findOneAndUpdate(
       { _id: id },
       { $set: cambios },
-      { runValidators: true, returnDocument: "after", upsert: false }
+      { runValidators: true, returnDocument: "after", upsert: false },
     );
     return documento ? representarReserva(documento) : null;
   }
@@ -130,7 +129,17 @@ function crearServicioReservasMongo() {
     return documentos.map(representarReserva);
   }
 
-  return { listar, obtenerPorId, crear, obtenerSalasPermitidas, contar, reemplazar, actualizar, eliminar, consultar };
+  return {
+    listar,
+    obtenerPorId,
+    crear,
+    obtenerSalasPermitidas,
+    contar,
+    reemplazar,
+    actualizar,
+    eliminar,
+    consultar,
+  };
 }
 
 module.exports = { crearServicioReservasMongo };

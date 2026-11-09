@@ -20,7 +20,11 @@ function crearManejadorErrores({ vistaFormulario, tituloFormulario }) {
       mensaje = "El identificador debe tener 24 caracteres hexadecimales.";
     }
 
-    console.error("Solicitud fallida:", res.locals.solicitudId ?? "Desconocido", error.name);
+    console.error(
+      "Solicitud fallida:",
+      res.locals.solicitudId ?? "Desconocido",
+      error.name,
+    );
 
     if (req.path.startsWith("/api/")) {
       return res.status(estado).json({

@@ -2,7 +2,10 @@ const express = require("express");
 const expressLayouts = require("express-ejs-layouts");
 const morgan = require("morgan");
 const path = require("node:path");
-const { identificarSolicitud, medirDuracion } = require("./middleware/solicitudes");
+const {
+  identificarSolicitud,
+  medirDuracion,
+} = require("./middleware/solicitudes");
 const { crearManejadorErrores } = require("./middleware/errores");
 const { crearControladorReservas } = require("./controladores/reservas");
 const { crearRouterReservas } = require("./rutas/reservas");
@@ -37,7 +40,7 @@ function crearApp({ servicioReservas, formatoRegistro }) {
       res.json({
         servicio: "activo",
         reservas: reservas,
-        solicitudId: res.locals.solicitudId
+        solicitudId: res.locals.solicitudId,
       });
     } catch (error) {
       next(error);
@@ -61,7 +64,7 @@ function crearApp({ servicioReservas, formatoRegistro }) {
     crearManejadorErrores({
       vistaFormulario: "reservas/nueva",
       tituloFormulario: "Nueva reserva",
-    })
+    }),
   );
 
   return app;
