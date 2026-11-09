@@ -139,6 +139,7 @@ function crearServicioReservasMongo() {
     const paginas = Math.ceil(total / limite);
 
     const documentos = await Reserva.find(filtro)
+      .select("estudiante email sala fecha turno personas estado _id")
       .sort(ordenMongo)
       .skip(salto)
       .limit(limite)
