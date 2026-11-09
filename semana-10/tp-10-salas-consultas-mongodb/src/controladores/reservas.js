@@ -32,7 +32,7 @@ function crearControladorReservas(servicio) {
   }
 
   async function listarApi(req, res) {
-    const permitidos = ["sala", "orden"];
+    const permitidos = ["sala", "orden", "pagina", "limite"];
     for (const campo of Object.keys(req.query)) {
       if (!permitidos.includes(campo)) {
         return res.status(400).json({ error: "Parámetro no permitido." });
@@ -60,7 +60,29 @@ function crearControladorReservas(servicio) {
       }
     }
 
-    const resultado = await servicio.consultar(sala, orden);
+    let pagina = 1;
+    if (req.query.pagina !== undefined) {
+      if (typeof req.query.pagina !== "string") {
+        return res.status(400).json({ error: "Página no permitida." });
+      }
+      pagina = Number(req.query.pagina);
+      if (!Number.isInteger(pagina) || pagina < 1 || pagina > 1000) {
+        return res.status(400).json({ error: "Página no permitida." });
+      }
+    }
+
+    let limite = 2;
+    if (req.query.limite !== undefined) {
+      if (typeof req.query.limite !== "string") {
+        return res.status(400).json({ error: "Límite no permitido." });
+      }
+      limite = Number(req.query.limite);
+      if (!Number.isInteger(limite) || limite < 1 || limite > 20) {
+        return res.status(400).json({ error: "Límite no permitido." });
+      }
+    }
+
+    const resultado = await servicio.consultar(sala, orden, pagina, limite);
     res.json(resultado);
   }
 
