@@ -1,0 +1,56 @@
+<h1 class="titulo-principal"><%= titulo %></h1>
+<h2 class="titulo-secundario"><%= seccion %></h2>
+
+<% if (error) { %>
+  <div class="alerta-error" role="alert">
+    <strong>Error:</strong> <%= error %>
+  </div>
+<% } %>
+
+<form action="/reservas" method="POST" class="formulario-reserva">
+  
+  <div class="campo-grupo">
+    <label for="estudiante" class="label-form">Estudiante:</label>
+    <input type="text" id="estudiante" name="estudiante" class="input-form" value="<%= valores.estudiante || '' %>">
+  </div>
+
+  <div class="campo-grupo">
+    <label for="email" class="label-form">Correo Electrónico:</label>
+    <input type="email" id="email" name="email" class="input-form" value="<%= valores.email || '' %>">
+  </div>
+
+  <div class="campo-grupo">
+    <label for="sala" class="label-form">Sala:</label>
+    <select id="sala" name="sala" class="input-form">
+      <option value="">Seleccioná una sala...</option>
+      <option value="Sala Norte" <%= valores.sala === 'Sala Norte' ? 'selected' : '' %>>Sala Norte</option>
+      <option value="Sala Sur" <%= valores.sala === 'Sala Sur' ? 'selected' : '' %>>Sala Sur</option>
+      <option value="Sala Multimedia" <%= valores.sala === 'Sala Multimedia' ? 'selected' : '' %>>Sala Multimedia</option>
+    </select>
+  </div>
+
+  <div class="campo-grupo">
+    <label for="fecha" class="label-form">Fecha de reserva:</label>
+    <input type="date" id="fecha" name="fecha" class="input-form" value="<%= valores.fecha || '' %>">
+  </div>
+
+  <div class="campo-grupo">
+    <label for="turno" class="label-form">Turno:</label>
+    <select id="turno" name="turno" class="input-form">
+      <option value="">Seleccioná un turno...</option>
+      <option value="Mañana" <%= valores.turno === 'Mañana' ? 'selected' : '' %>>Mañana</option>
+      <option value="Tarde" <%= valores.turno === 'Tarde' ? 'selected' : '' %>>Tarde</option>
+      <option value="Noche" <%= valores.turno === 'Noche' ? 'selected' : '' %>>Noche</option>
+    </select>
+  </div>
+
+  <div class="campo-grupo">
+    <label for="personas" class="label-form">Cantidad de personas (1 a 6):</label>
+    <input type="number" id="personas" name="personas" class="input-form" min="1" max="6" value="<%= valores.personas || '' %>">
+  </div>
+
+  <button type="submit" class="btn-primario">Confirmar Reserva</button>
+
+</form>
+
+<a href="/reservas" class="enlace-basico">Volver al listado</a>
