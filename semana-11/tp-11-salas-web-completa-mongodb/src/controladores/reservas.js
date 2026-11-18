@@ -31,6 +31,109 @@ function crearControladorReservas(servicio) {
     res.redirect("/reservas");
   }
 
+  async function mostrarEdicion(req, res) {
+    const reserva = await servicio.obtenerPorId(req.params.id);
+    if (!reserva) {
+      return res.status(404).render("no-encontrado", {
+        titulo: "Reserva no encontrada",
+        mensaje: "No existe la reserva que querés editar.",
+      });
+    }
+    res.render("reservas/editar", {
+      titulo: "Editar reserva",
+      error: null,
+      id: reserva.id,
+      valores: { ...reserva },
+    });
+  }
+
+  async function guardarEdicion(req, res) {
+    const reserva = await servicio.obtenerPorId(req.params.id);
+    if (!reserva) {
+      return res.status(404).render("no-encontrado", {
+        titulo: "Reserva no encontrada",
+        mensaje: "La reserva ya no existe. No se guardaron cambios.",
+      });
+    }
+
+    const datos = req.body ?? {};
+    const valores = {
+      estudiante: typeof datos.estudiante === "string" ? datos.estudiante : "",
+      email: typeof datos.email === "string" ? datos.email : "",
+      sala: typeof datos.sala === "string" ? datos.sala : "",
+      fecha: typeof datos.fecha === "string" ? datos.fecha : "",
+      turno: typeof datos.turno === "string" ? datos.turno : "",
+      personas: typeof datos.personas === "string" ? datos.personas : "",
+      estado: typeof datos.estado === "string" ? datos.estado : "",
+    };
+
+    const permitidos = [
+      "estudiante",
+      "email",
+      "sala",
+      "fecha",
+      "turno",
+      "personas",
+      "estado",
+    ];
+
+    let hayCamposExtra = false;
+    for (const campo of Object.keys(datos)) {
+      if (!permitidos.includes(campo)) {
+        hayCamposExtra = true;
+      }
+    }
+
+    const personasNum =
+      valores.personas.trim() === "" ? NaN : Number(valores.personas);
+
+    const salasValidas = servicio.obtenerSalasPermitidas();
+    const turnosValidos = ["Mañana", "Tarde", "Noche"];
+    const estadosValidos = ["pendiente", "confirmada"];
+
+    if (
+      hayCamposExtra ||
+      !valores.estudiante.trim() ||
+      !valores.email.trim() ||
+      !salasValidas.includes(valores.sala) ||
+      !valores.fecha.trim() ||
+      !turnosValidos.includes(valores.turno) ||
+      !Number.isInteger(personasNum) ||
+      personasNum < 1 ||
+      personasNum > 6 ||
+      !estadosValidos.includes(valores.estado)
+    ) {
+      res.locals.formularioEdicion = { id: reserva.id, valores };
+      return res.status(400).render("reservas/editar", {
+        titulo: "Editar reserva",
+        error:
+          "Revisá los campos obligatorios, las opciones válidas y que las personas sean de 1 a 6.",
+        id: reserva.id,
+        valores,
+      });
+    }
+
+    const reemplazo = {
+      estudiante: valores.estudiante.trim(),
+      email: valores.email.trim(),
+      sala: valores.sala,
+      fecha: valores.fecha.trim(),
+      turno: valores.turno,
+      personas: personasNum,
+      estado: valores.estado,
+    };
+
+    const actualizado = await servicio.reemplazar(reserva.id, reemplazo);
+    if (!actualizado) {
+      return res.status(404).render("no-encontrado", {
+        titulo: "Reserva no encontrada",
+        mensaje: "La reserva ya no existe. No se guardaron cambios.",
+      });
+    }
+
+    res.redirect(303, `/reservas/${actualizado.id}`);
+  }
+
   async function listarApi(req, res) {
     const permitidos = ["sala", "orden", "pagina", "limite"];
     for (const campo of Object.keys(req.query)) {
@@ -134,6 +237,8 @@ function crearControladorReservas(servicio) {
     mostrarFormulario,
     mostrarDetalle,
     crear,
+    mostrarEdicion,
+    guardarEdicion,
     listarApi,
     obtenerApi,
     crearApi,
