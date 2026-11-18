@@ -33,6 +33,15 @@ function crearManejadorErrores({ vistaFormulario, tituloFormulario }) {
       });
     }
 
+    if (esValidacion && req.method === "POST" && res.locals.formularioEdicion) {
+      return res.status(400).render("reservas/editar", {
+        titulo: "Editar reserva",
+        error: mensaje,
+        id: res.locals.formularioEdicion.id,
+        valores: res.locals.formularioEdicion.valores,
+      });
+    }
+
     if (esValidacion && req.method === "POST") {
       return res.status(400).render(vistaFormulario, {
         titulo: tituloFormulario,
