@@ -8,6 +8,8 @@ function crearRouterReservas(controlador, middleware) {
   router.get("/", controlador.listar);
   router.get("/nueva", controlador.mostrarFormulario);
   router.post("/", middleware.validarReserva, controlador.crear);
+  router.get("/:id/editar", controlador.mostrarEdicion);
+  router.post("/:id/editar", controlador.guardarEdicion);
   router.get("/:id", controlador.mostrarDetalle);
 
   return router;
