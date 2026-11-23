@@ -9,8 +9,10 @@
     <li><strong>Fecha:</strong> <%= reserva.fecha %></li>
     <li><strong>Turno:</strong> <%= reserva.turno %></li>
     <li><strong>Cantidad de personas:</strong> <%= reserva.personas %></li>
+    <li><strong>Estado:</strong> <%= reserva.estado %></li>
   </ul>
 </div>
 
 <p style="margin-top: 1.5rem;"><a href="/reservas" class="enlace-basico">Volver al listado</a></p>
 <p><a class="boton" href="/reservas/<%= reserva.id %>/editar">Editar reserva</a></p>
+<p><a href="/reservas/<%= reserva.id %>/estado">Cambiar estado</a></p>

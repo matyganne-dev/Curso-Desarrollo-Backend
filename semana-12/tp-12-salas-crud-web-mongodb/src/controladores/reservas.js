@@ -137,6 +137,64 @@ function crearControladorReservas(servicio) {
     res.redirect(303, `/reservas/${actualizado.id}`);
   }
 
+  async function mostrarCambioEstado(req, res) {
+    const reserva = await servicio.obtenerPorId(req.params.id);
+    if (!reserva) {
+      return res.status(404).render("no-encontrado", {
+        titulo: "Reserva no encontrada",
+        mensaje: "No existe la reserva solicitada. No se guardaron cambios.",
+      });
+    }
+
+    res.render("reservas/estado", {
+      titulo: "Cambiar estado",
+      error: null,
+      id: reserva.id,
+      valores: { estado: String(reserva.estado) },
+    });
+  }
+
+  async function guardarCambioEstado(req, res) {
+    const reserva = await servicio.obtenerPorId(req.params.id);
+    if (!reserva) {
+      return res.status(404).render("no-encontrado", {
+        titulo: "Reserva no encontrada",
+        mensaje: "No existe la reserva solicitada. No se guardaron cambios.",
+      });
+    }
+
+    const datos = req.body ?? {};
+    const valores = {
+      estado: typeof datos.estado === "string" ? datos.estado : "",
+    };
+
+    const estadoValido =
+      valores.estado === "pendiente" || valores.estado === "confirmada";
+
+    if (Object.keys(datos).length !== 1 || !estadoValido) {
+      res.locals.formularioParcial = { id: reserva.id, valores };
+      return res.status(400).render("reservas/estado", {
+        titulo: "Cambiar estado",
+        error: "Enviá únicamente estado con pendiente o confirmada.",
+        id: reserva.id,
+        valores,
+      });
+    }
+
+    res.locals.formularioParcial = { id: reserva.id, valores };
+
+    const cambios = { estado: valores.estado };
+    const actualizada = await servicio.actualizar(reserva.id, cambios);
+    if (!actualizada) {
+      return res.status(404).render("no-encontrado", {
+        titulo: "Reserva no encontrada",
+        mensaje: "No existe la reserva solicitada. No se guardaron cambios.",
+      });
+    }
+
+    res.redirect(303, `/reservas/${actualizada.id}`);
+  }
+
   async function listarApi(req, res) {
     const permitidos = ["sala", "orden", "pagina", "limite"];
     for (const campo of Object.keys(req.query)) {
@@ -242,6 +300,8 @@ function crearControladorReservas(servicio) {
     crear,
     mostrarEdicion,
     guardarEdicion,
+    mostrarCambioEstado,
+    guardarCambioEstado,
     listarApi,
     obtenerApi,
     crearApi,

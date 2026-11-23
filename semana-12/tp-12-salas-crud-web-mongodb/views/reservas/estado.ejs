@@ -1,0 +1,21 @@
+<section class="panel-formulario">
+  <p class="etiqueta">CAMBIO DE ESTADO</p>
+  <h1><%= titulo %></h1>
+  <p>Se modifica solo estado. Los demás datos se conservan.</p>
+
+  <% if (error) { %>
+    <p class="error" role="alert"><%= error %></p>
+  <% } %>
+
+  <form action="/reservas/<%= id %>/estado" method="post" class="formulario">
+    <label for="estado">Estado</label>
+    <select id="estado" name="estado" required>
+      <option value="">Elegí una opción</option>
+      <option value="pendiente" <%= valores.estado === "pendiente" ? "selected" : "" %>>Pendiente</option>
+      <option value="confirmada" <%= valores.estado === "confirmada" ? "selected" : "" %>>Confirmada</option>
+    </select>
+
+    <button type="submit">Guardar estado</button>
+    <a href="/reservas/<%= id %>">Cancelar</a>
+  </form>
+</section>
