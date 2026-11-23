@@ -95,6 +95,7 @@ function crearControladorReservas(servicio) {
       hayCamposExtra ||
       !valores.estudiante.trim() ||
       !valores.email.trim() ||
+      !valores.email.trim().includes("@") ||
       !salasValidas.includes(valores.sala) ||
       !valores.fecha.trim() ||
       !turnosValidos.includes(valores.turno) ||
@@ -112,6 +113,8 @@ function crearControladorReservas(servicio) {
         valores,
       });
     }
+
+    res.locals.formularioEdicion = { id: reserva.id, valores };
 
     const reemplazo = {
       estudiante: valores.estudiante.trim(),
