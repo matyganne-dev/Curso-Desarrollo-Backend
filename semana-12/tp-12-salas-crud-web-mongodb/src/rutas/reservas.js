@@ -12,6 +12,8 @@ function crearRouterReservas(controlador, middleware) {
   router.post("/:id/editar", controlador.guardarEdicion);
   router.get("/:id/estado", controlador.mostrarCambioEstado);
   router.post("/:id/estado", controlador.guardarCambioEstado);
+  router.get("/:id/eliminar", controlador.mostrarEliminacion);
+  router.post("/:id/eliminar", controlador.eliminarReserva);
   router.get("/:id", controlador.mostrarDetalle);
 
   return router;

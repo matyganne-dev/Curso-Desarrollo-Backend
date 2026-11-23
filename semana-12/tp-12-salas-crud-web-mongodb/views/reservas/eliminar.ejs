@@ -1,0 +1,23 @@
+<section class="panel-formulario">
+  <p class="etiqueta">CONFIRMAR ELIMINACIÓN</p>
+  <h1><%= titulo %></h1>
+  <p>Esta acción es permanente y eliminará la reserva de forma definitiva.</p>
+
+  <% if (error) { %>
+    <p class="error" role="alert"><%= error %></p>
+  <% } %>
+
+  <ul>
+    <li><strong>Identificador:</strong> #<%= reserva.id %></li>
+    <li><strong>Estudiante:</strong> <%= reserva.estudiante %></li>
+    <li><strong>Sala:</strong> <%= reserva.sala %></li>
+    <li><strong>Fecha:</strong> <%= reserva.fecha %></li>
+    <li><strong>Turno:</strong> <%= reserva.turno %></li>
+  </ul>
+
+  <form action="/reservas/<%= reserva.id %>/eliminar" method="post" class="formulario">
+    <input type="hidden" name="confirmar" value="si">
+    <button type="submit">Confirmar eliminación</button>
+    <a href="/reservas/<%= reserva.id %>">Cancelar</a>
+  </form>
+</section>

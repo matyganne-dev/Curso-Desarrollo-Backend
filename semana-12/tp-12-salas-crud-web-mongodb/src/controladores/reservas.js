@@ -195,6 +195,57 @@ function crearControladorReservas(servicio) {
     res.redirect(303, `/reservas/${actualizada.id}`);
   }
 
+  async function mostrarEliminacion(req, res) {
+    const reserva = await servicio.obtenerPorId(req.params.id);
+    if (!reserva) {
+      return res.status(404).render("no-encontrado", {
+        titulo: "Reserva no encontrada",
+        mensaje: "No existe la reserva solicitada. No se eliminó nada.",
+      });
+    }
+
+    res.render("reservas/eliminar", {
+      titulo: "Eliminar reserva",
+      error: null,
+      reserva,
+    });
+  }
+
+  async function eliminarReserva(req, res) {
+    const reserva = await servicio.obtenerPorId(req.params.id);
+    if (!reserva) {
+      return res.status(404).render("no-encontrado", {
+        titulo: "Reserva no encontrada",
+        mensaje: "No existe la reserva solicitada. No se eliminó nada.",
+      });
+    }
+
+    const datos = req.body ?? {};
+    const claves = Object.keys(datos);
+    const esConfirmacionValida =
+      claves.length === 1 &&
+      claves[0] === "confirmar" &&
+      datos.confirmar === "si";
+
+    if (!esConfirmacionValida) {
+      return res.status(400).render("reservas/eliminar", {
+        titulo: "Eliminar reserva",
+        error: "Confirmá la eliminación enviando únicamente confirmar=si.",
+        reserva,
+      });
+    }
+
+    const eliminada = await servicio.eliminar(reserva.id);
+    if (!eliminada) {
+      return res.status(404).render("no-encontrado", {
+        titulo: "Reserva no encontrada",
+        mensaje: "No existe la reserva solicitada. No se eliminó nada.",
+      });
+    }
+
+    res.redirect(303, "/reservas");
+  }
+
   async function listarApi(req, res) {
     const permitidos = ["sala", "orden", "pagina", "limite"];
     for (const campo of Object.keys(req.query)) {
@@ -302,6 +353,8 @@ function crearControladorReservas(servicio) {
     guardarEdicion,
     mostrarCambioEstado,
     guardarCambioEstado,
+    mostrarEliminacion,
+    eliminarReserva,
     listarApi,
     obtenerApi,
     crearApi,
